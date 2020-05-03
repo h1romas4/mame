@@ -34658,6 +34658,9 @@ renegadeb                       // bootleg
 @source:replicator.cpp
 replica1                        // Makerbot Replicator 1 desktop 3d printer
 
+@source:vgmduino.cpp
+kanon                           // vgmduino
+
 @source:retofinv.cpp
 retofinv                        // A37 (c) 1985 Taito Corporation
 retofinvb                       // bootleg

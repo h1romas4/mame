@@ -1290,6 +1290,12 @@ void avr8_device::timer0_tick()
 		break;
 
 	case WGM02_FAST_PWM:
+	// TODO: hack
+	if(count == m_r[AVR8_REGIDX_OCR0A]) {
+		m_r[AVR8_REGIDX_TIFR0] |= AVR8_TIFR0_TOV0_MASK;
+		update_interrupt(AVR8_INTIDX_TOV0);
+		count = 0;
+	}
 	LOGMASKED(LOG_TIMER0 | LOG_UNKNOWN, "%s: WGM02_FAST_PWM: Unimplemented timer0 waveform generation mode\n", machine().describe_context());
 	break;
 
@@ -2957,6 +2963,33 @@ uint8_t avr8_device::regs_r(offs_t offset)
 	case AVR8_REGIDX_TCNT2:
 	case AVR8_REGIDX_UCSR0A:
 		return m_r[offset];
+
+	// TODO: hack
+	case AVR8_REGIDX_MCUSR:
+	case AVR8_REGIDX_MCUCR:
+	case AVR8_REGIDX_ADCSRA:
+	case AVR8_REGIDX_ADCSRB:
+	case AVR8_REGIDX_TCCR1A:
+	case AVR8_REGIDX_TCCR1B:
+	case AVR8_REGIDX_TCCR1C:
+	case AVR8_REGIDX_OCR0A:
+	case AVR8_REGIDX_OCR0B:
+	case AVR8_REGIDX_UCSR0B:
+	case AVR8_REGIDX_UCSR0C:
+	case AVR8_REGIDX_TCCR2A:
+	case AVR8_REGIDX_TCCR2B:
+	case AVR8_REGIDX_TCCR0A:
+	case AVR8_REGIDX_TCCR0B:
+	case AVR8_REGIDX_TCNT0:
+		return m_r[offset];
+	// TODO: hack
+	case AVR8_REGIDX_TIFR0:
+	case AVR8_REGIDX_TIFR1:
+	case AVR8_REGIDX_TIFR2:
+	case AVR8_REGIDX_TIFR3:
+	case AVR8_REGIDX_TIFR4:
+	case AVR8_REGIDX_TIFR5:
+		return 0b00000111;
 
 	default:
 		LOGMASKED(LOG_UNKNOWN, "%s: Unknown Register Read: %03X\n", machine().describe_context(), offset);
