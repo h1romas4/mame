@@ -33,8 +33,8 @@ private:
 	uint8_t m_port_c;
 	uint8_t m_port_d;
 
-	DECLARE_READ8_MEMBER(port_r);
-	DECLARE_WRITE8_MEMBER(port_w);
+	uint8_t port_r(offs_t offset);
+	void port_w(offs_t offset, uint8_t data);
 
 	virtual void machine_start() override;
 	virtual void machine_reset() override;
@@ -48,7 +48,7 @@ void vgmduino_state::machine_start()
 {
 }
 
-READ8_MEMBER(vgmduino_state::port_r)
+uint8_t vgmduino_state::port_r(offs_t offset)
 {
 	switch( offset )
 	{
@@ -74,7 +74,7 @@ READ8_MEMBER(vgmduino_state::port_r)
 	return 0;
 }
 
-WRITE8_MEMBER(vgmduino_state::port_w)
+void vgmduino_state::port_w(offs_t offset, uint8_t data)
 {
 	/* YM2151 ATMEGA328 PORT_REG
 	   D0     2         AVR8_IO_PORTD 2
@@ -120,7 +120,7 @@ WRITE8_MEMBER(vgmduino_state::port_w)
 				// D7     9         AVR8_IO_PORTB 1
 				uint8_t dat = (0b11111100 & m_port_d) >> 2 | BIT(m_port_b, 0) << 6 | BIT(m_port_b, 1) << 7;
 				m_ym2151->write(adr, dat);
-				// printf("VGMDUINO: m_ym2151->write(0x%02X, 0x%02X)\n", adr, dat);
+				printf("VGMDUINO: m_ym2151->write(0x%02X, 0x%02X)\n", adr, dat);
 				break;
 			}
 			/* YM2151 RD 1->0 */
@@ -130,7 +130,7 @@ WRITE8_MEMBER(vgmduino_state::port_w)
 				/* YM2151 A0 */
 				uint8_t adr = BIT(m_port_b, 4);
 				uint8_t state = m_ym2151->read(adr);
-				// printf("VGMDUINO: m_ym2151->read(0x%02X) = 0x%02X\n", adr, state);
+				printf("VGMDUINO: m_ym2151->read(0x%02X) = 0x%02X\n", adr, state);
 				/* YM2151 D0-D7 */
 				m_port_d |= (state & 0b0011111) << 2;
 				m_port_b |= (state & 0b1100000) >> 5;
