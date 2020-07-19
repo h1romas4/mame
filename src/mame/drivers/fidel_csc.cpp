@@ -12,6 +12,8 @@ Fidelity CSC(and derived) hardware
 TODO:
 - dump/add original csce
 - hook up csce I/O properly, it doesn't have PIAs
+- IRQ Tlow duration, on csc it was measured and turned out to be 73.425us
+  but that's too long csce and super9cc
 
 *******************************************************************************
 
@@ -25,17 +27,17 @@ Memory map:
 0800-0FFF: 1K of RAM (note: mirrored twice)
 1000-17FF: PIA 1 (display, TSI speech chip)
 1800-1FFF: PIA 0 (keypad, LEDs)
-2000-3FFF: 101-64019 ROM*
+2000-3FFF: 101-64019 or 101-1025A04 ROM*
 4000-7FFF: mirror of 0000-3FFF
 8000-9FFF: not used
-A000-BFFF: 101-1025A03 ROM
+A000-BFFF: 101-1025A03 ROM (A12 tied high)
 C000-DFFF: 101-1025A02 ROM
 E000-FDFF: 101-1025A01 ROM
 FE00-FFFF: 512 byte 74S474 PROM
 
 *: 101-64019 is also used on the VSC(fidel_vsc.cpp). It contains the opening book
 and "64 greatest games", as well as some Z80 code. Obviously the latter is unused
-on the CSC.
+on the CSC. Also seen with 101-1025A04 label, same ROM contents.
 
 CPU is a 6502 running at 1.95MHz (3.9MHz resonator, divided by 2)
 
@@ -270,18 +272,18 @@ protected:
 	u16 read_inputs();
 	void update_display();
 	void update_sound();
-	DECLARE_READ8_MEMBER(speech_r);
+	u8 speech_r(offs_t offset);
 
-	DECLARE_WRITE8_MEMBER(pia0_pa_w);
-	DECLARE_WRITE8_MEMBER(pia0_pb_w);
-	DECLARE_READ8_MEMBER(pia0_pa_r);
+	void pia0_pa_w(u8 data);
+	void pia0_pb_w(u8 data);
+	u8 pia0_pa_r();
 	DECLARE_WRITE_LINE_MEMBER(pia0_ca2_w);
 	DECLARE_WRITE_LINE_MEMBER(pia0_cb2_w);
 	DECLARE_READ_LINE_MEMBER(pia0_ca1_r);
 	DECLARE_READ_LINE_MEMBER(pia0_cb1_r);
-	DECLARE_WRITE8_MEMBER(pia1_pa_w);
-	DECLARE_WRITE8_MEMBER(pia1_pb_w);
-	DECLARE_READ8_MEMBER(pia1_pb_r);
+	void pia1_pa_w(u8 data);
+	void pia1_pb_w(u8 data);
+	u8 pia1_pb_r();
 	DECLARE_WRITE_LINE_MEMBER(pia1_ca2_w);
 
 	u8 m_led_data;
@@ -398,7 +400,7 @@ void csc_state::update_sound()
 	m_dac->write(BIT(1 << m_inp_mux, 9));
 }
 
-READ8_MEMBER(csc_state::speech_r)
+u8 csc_state::speech_r(offs_t offset)
 {
 	return m_speech_rom[m_speech_bank << 12 | offset];
 }
@@ -406,13 +408,13 @@ READ8_MEMBER(csc_state::speech_r)
 
 // 6821 PIA 0
 
-READ8_MEMBER(csc_state::pia0_pa_r)
+u8 csc_state::pia0_pa_r()
 {
 	// d0-d5: button row 0-5
 	return (read_inputs() & 0x3f) | 0xc0;
 }
 
-WRITE8_MEMBER(csc_state::pia0_pa_w)
+void csc_state::pia0_pa_w(u8 data)
 {
 	// d6,d7: 7442 A0,A1
 	m_inp_mux = (m_inp_mux & ~3) | (data >> 6 & 3);
@@ -420,7 +422,7 @@ WRITE8_MEMBER(csc_state::pia0_pa_w)
 	update_sound();
 }
 
-WRITE8_MEMBER(csc_state::pia0_pb_w)
+void csc_state::pia0_pb_w(u8 data)
 {
 	// d0-d7: led row data
 	m_led_data = data;
@@ -458,7 +460,7 @@ WRITE_LINE_MEMBER(csc_state::pia0_ca2_w)
 
 // 6821 PIA 1
 
-WRITE8_MEMBER(csc_state::pia1_pa_w)
+void csc_state::pia1_pa_w(u8 data)
 {
 	// d0-d5: TSI C0-C5
 	m_speech->data_w(data & 0x3f);
@@ -468,7 +470,7 @@ WRITE8_MEMBER(csc_state::pia1_pa_w)
 	update_display();
 }
 
-WRITE8_MEMBER(csc_state::pia1_pb_w)
+void csc_state::pia1_pb_w(u8 data)
 {
 	// d0: speech ROM A12
 	m_speech->force_update(); // update stream to now
@@ -481,7 +483,7 @@ WRITE8_MEMBER(csc_state::pia1_pb_w)
 	m_speech->set_output_gain(0, (data & 0x10) ? 0.25 : 1.0);
 }
 
-READ8_MEMBER(csc_state::pia1_pb_r)
+u8 csc_state::pia1_pb_r()
 {
 	// d2: printer?
 	u8 data = 0x04;
@@ -516,7 +518,8 @@ void csc_state::csc_map(address_map &map)
 	map(0x1000, 0x1003).mirror(0x47fc).rw(m_pia[1], FUNC(pia6821_device::read), FUNC(pia6821_device::write));
 	map(0x1800, 0x1803).mirror(0x47fc).rw(m_pia[0], FUNC(pia6821_device::read), FUNC(pia6821_device::write));
 	map(0x2000, 0x3fff).mirror(0x4000).rom();
-	map(0xa000, 0xffff).rom();
+	map(0xa000, 0xafff).rom().region("maincpu", 0xb000);
+	map(0xb000, 0xffff).rom();
 }
 
 void csc_state::su9_map(address_map &map)

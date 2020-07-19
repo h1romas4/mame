@@ -1,32 +1,9 @@
 // license:GPL-2.0+
 // copyright-holders:Couriersud
 
-// Commented out for now. Relatively low number of terminals / nets make
-// the vectorizations fast-math enables pretty expensive
-//
-#if 0
-#pragma GCC optimize "-ftree-vectorize"
-#pragma GCC optimize "-ffast-math"
-#pragma GCC optimize "-funsafe-math-optimizations"
-#pragma GCC optimize "-funroll-loops"
-#pragma GCC optimize "-funswitch-loops"
-#pragma GCC optimize "-fstrict-aliasing"
-#pragma GCC optimize "tree-vectorizer-verbose=7"
-#pragma GCC optimize "opt-info-vec"
-#pragma GCC optimize "opt-info-vec-missed"
-//#pragma GCC optimize "tree-parallelize-loops=4"
-#pragma GCC optimize "variable-expansion-in-unroller"
-#pragma GCC optimize "unsafe-loop-optimizations"
-#pragma GCC optimize "vect-cost-model"
-#pragma GCC optimize "variable-expansion-in-unroller"
-#pragma GCC optimize "tree-loop-if-convert-stores"
-#pragma GCC optimize "tree-loop-distribution"
-#pragma GCC optimize "tree-loop-im"
-#pragma GCC optimize "tree-loop-ivcanon"
-#pragma GCC optimize "ivopts"
-#endif
 
 #include "netlist/nl_factory.h"
+#include "core/setup.h"
 #include "netlist/nl_setup.h" // FIXME: only needed for splitter code
 #include "nld_matrix_solver.h"
 #include "nld_ms_direct.h"
@@ -42,6 +19,7 @@
 #include "plib/pomp.h"
 
 #include <algorithm>
+#include <type_traits>
 
 namespace netlist
 {
@@ -64,7 +42,7 @@ namespace devices
 			s->log_stats();
 	}
 
-	NETLIB_UPDATE(solver)
+	NETLIB_HANDLER(solver, fb_step)
 	{
 		if (m_params.m_dynamic_ts)
 			return;
@@ -104,18 +82,22 @@ namespace devices
 		}
 	}
 
+	//using solver_ptr = host_arena::unique_ptr<solver::matrix_solver_t>;
+
+	// FIXME: should be created in device space
 	template <class C>
-	plib::unique_ptr<solver::matrix_solver_t> create_it(netlist_state_t &nl, pstring name,
-		analog_net_t::list_t &nets,
+	NETLIB_NAME(solver)::solver_ptr create_it(netlist_state_t &nl, pstring name,
+		NETLIB_NAME(solver)::net_list_t &nets,
 		solver::solver_parameters_t &params, std::size_t size)
 	{
-		return plib::make_unique<C>(nl, name, nets, &params, size);
+		return plib::make_unique<C, host_arena>(nl, name, nets, &params, size);
+		//return nl.make_pool_object<C>(nl, name, nets, &params, size);
 	}
 
 	template <typename FT, int SIZE>
-	plib::unique_ptr<solver::matrix_solver_t> NETLIB_NAME(solver)::create_solver(std::size_t size,
+	NETLIB_NAME(solver)::solver_ptr NETLIB_NAME(solver)::create_solver(std::size_t size,
 		const pstring &solvername,
-		analog_net_t::list_t &nets)
+		NETLIB_NAME(solver)::net_list_t &nets)
 	{
 		switch (m_params.m_method())
 		{
@@ -146,41 +128,35 @@ namespace devices
 				return create_it<solver::matrix_solver_GCR_t<FT, SIZE>>(state(), solvername, nets, m_params, size);
 #endif
 		}
-		return plib::unique_ptr<solver::matrix_solver_t>();
+		return solver_ptr();
 	}
 
 	template <typename FT>
-	plib::unique_ptr<solver::matrix_solver_t> NETLIB_NAME(solver)::create_solvers(
+	NETLIB_NAME(solver)::solver_ptr NETLIB_NAME(solver)::create_solvers(
 		const pstring &sname,
-		analog_net_t::list_t &nets)
+		net_list_t &nets)
 	{
 		std::size_t net_count = nets.size();
 		switch (net_count)
 		{
 			case 1:
-				return plib::make_unique<solver::matrix_solver_direct1_t<FT>>(state(), sname, nets, &m_params);
-				break;
+				return plib::make_unique<solver::matrix_solver_direct1_t<FT>, host_arena>(state(), sname, nets, &m_params);
+				//return state().make_pool_object<solver::matrix_solver_direct1_t<FT>>(state(), sname, nets, &m_params);
 			case 2:
-				return plib::make_unique<solver::matrix_solver_direct2_t<FT>>(state(), sname, nets, &m_params);
-				break;
+				return plib::make_unique<solver::matrix_solver_direct2_t<FT>, host_arena>(state(), sname, nets, &m_params);
+				//return state().make_pool_object<solver::matrix_solver_direct2_t<FT>>(state(), sname, nets, &m_params);
 			case 3:
 				return create_solver<FT, 3>(3, sname, nets);
-				break;
 			case 4:
 				return create_solver<FT, 4>(4, sname, nets);
-				break;
 			case 5:
 				return create_solver<FT, 5>(5, sname, nets);
-				break;
 			case 6:
 				return create_solver<FT, 6>(6, sname, nets);
-				break;
 			case 7:
 				return create_solver<FT, 7>(7, sname, nets);
-				break;
 			case 8:
 				return create_solver<FT, 8>(8, sname, nets);
-				break;
 			default:
 				log().info(MI_NO_SPECIFIC_SOLVER(net_count));
 				if (net_count <= 16)
@@ -208,7 +184,6 @@ namespace devices
 					return create_solver<FT, -512>(net_count, sname, nets);
 				}
 				return create_solver<FT, 0>(net_count, sname, nets);
-				break;
 		}
 	}
 
@@ -223,10 +198,10 @@ namespace devices
 				{
 					netlist.log().verbose("   ==> not a rail net");
 					// Must be an analog net
-					auto &n = *static_cast<analog_net_t *>(net.get());
+					auto &n = dynamic_cast<analog_net_t &>(*net);
 					if (!already_processed(n))
 					{
-						groupspre.emplace_back(analog_net_t::list_t());
+						groupspre.emplace_back(NETLIB_NAME(solver)::net_list_t());
 						process_net(netlist, n);
 					}
 				}
@@ -236,7 +211,7 @@ namespace devices
 					groups.push_back(g);
 		}
 
-		std::vector<analog_net_t::list_t> groups;
+		std::vector<NETLIB_NAME(solver)::net_list_t> groups;
 
 	private:
 
@@ -279,6 +254,7 @@ namespace devices
 			return false;
 		}
 
+		// NOLINTNEXTLINE(misc-no-recursion)
 		void process_net(netlist_state_t &netlist, analog_net_t &n)
 		{
 			// ignore empty nets. FIXME: print a warning message
@@ -294,9 +270,9 @@ namespace devices
 					// only process analog terminals
 					if (term->is_type(detail::terminal_type::TERMINAL))
 					{
-						auto *pt = static_cast<terminal_t *>(term);
+						auto &pt = dynamic_cast<terminal_t &>(*term);
 						// check the connected terminal
-						analog_net_t &connected_net = netlist.setup().get_connected_terminal(*pt)->net();
+						analog_net_t &connected_net = netlist.setup().get_connected_terminal(pt)->net();
 						netlist.log().verbose("  Connected net {}", connected_net.name());
 						if (!check_if_processed_and_join(connected_net))
 							process_net(netlist, connected_net);
@@ -305,7 +281,7 @@ namespace devices
 			}
 		}
 
-		std::vector<analog_net_t::list_t> groupspre;
+		std::vector<NETLIB_NAME(solver)::net_list_t> groupspre;
 	};
 
 	void NETLIB_NAME(solver)::post_start()
@@ -321,29 +297,23 @@ namespace devices
 		log().verbose("Found {1} net groups in {2} nets\n", splitter.groups.size(), state().nets().size());
 		for (auto & grp : splitter.groups)
 		{
-			plib::unique_ptr<solver::matrix_solver_t> ms;
+			solver_ptr ms;
 			pstring sname = plib::pfmt("Solver_{1}")(m_mat_solvers.size());
 
 			switch (m_params.m_fp_type())
 			{
 				case solver::matrix_fp_type_e::FLOAT:
-#if (NL_USE_FLOAT_MATRIX)
-					ms = create_solvers<float>(sname, grp);
-#else
-					log().info("FPTYPE {1} not supported. Using DOUBLE", m_params.m_fp_type().name());
-					ms = create_solvers<double>(sname, grp);
-#endif
+					if (!config::use_float_matrix())
+						log().info("FPTYPE {1} not supported. Using DOUBLE", m_params.m_fp_type().name());
+					ms = create_solvers<std::conditional_t<config::use_float_matrix::value, float, double>>(sname, grp);
 					break;
 				case solver::matrix_fp_type_e::DOUBLE:
 					ms = create_solvers<double>(sname, grp);
 					break;
 				case solver::matrix_fp_type_e::LONGDOUBLE:
-#if (NL_USE_LONG_DOUBLE_MATRIX)
-					ms = create_solvers<long double>(sname, grp);
-#else
-					log().info("FPTYPE {1} not supported. Using DOUBLE", m_params.m_fp_type().name());
-					ms = create_solvers<double>(sname, grp);
-#endif
+					if (!config::use_long_double_matrix())
+						log().info("FPTYPE {1} not supported. Using DOUBLE", m_params.m_fp_type().name());
+					ms = create_solvers<std::conditional_t<config::use_long_double_matrix::value, long double, double>>(sname, grp);
 					break;
 				case solver::matrix_fp_type_e::FLOATQ128:
 #if (NL_USE_FLOAT128)
@@ -382,7 +352,7 @@ namespace devices
 		for (auto & s : m_mat_solvers)
 		{
 			auto r = s->create_solver_code(target);
-			if (r.first != "") // ignore solvers not supporting static compile
+			if (!r.first.empty()) // ignore solvers not supporting static compile
 				mp.push_back(r);
 		}
 		return mp;

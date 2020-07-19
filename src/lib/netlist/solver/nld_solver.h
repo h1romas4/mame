@@ -27,7 +27,7 @@ namespace devices
 	NETLIB_OBJECT(solver)
 	{
 		NETLIB_CONSTRUCTOR(solver)
-		, m_fb_step(*this, "FB_step")
+		, m_fb_step(*this, "FB_step", NETLIB_DELEGATE(fb_step))
 		, m_Q_step(*this, "Q_step")
 		, m_params(*this)
 		{
@@ -39,31 +39,37 @@ namespace devices
 		void post_start();
 		void stop();
 
-		nl_fptype gmin() const { return m_params.m_gmin(); }
+		auto gmin() const -> decltype(solver::solver_parameters_t::m_gmin()) { return m_params.m_gmin(); }
 
 		solver::static_compile_container create_solver_code(solver::static_compile_target target);
 
-		NETLIB_UPDATEI();
 		NETLIB_RESETI();
 		// NETLIB_UPDATE_PARAMI();
 
+		//using solver_ptr = device_arena::unique_ptr<solver::matrix_solver_t>;
+		using solver_ptr = host_arena::unique_ptr<solver::matrix_solver_t>;
+		using net_list_t = solver::matrix_solver_t::net_list_t;
+
 	private:
+		NETLIB_HANDLERI(fb_step);
+
 		logic_input_t m_fb_step;
 		logic_output_t m_Q_step;
 
-		std::vector<plib::unique_ptr<solver::matrix_solver_t>> m_mat_solvers;
+		// FIXME: these should be created in device space
+		std::vector<solver_ptr> m_mat_solvers;
 		std::vector<solver::matrix_solver_t *> m_mat_solvers_all;
 		std::vector<solver::matrix_solver_t *> m_mat_solvers_timestepping;
 
 		solver::solver_parameters_t m_params;
 
 		template <typename FT, int SIZE>
-		plib::unique_ptr<solver::matrix_solver_t> create_solver(std::size_t size,
-			const pstring &solvername, analog_net_t::list_t &nets);
+		solver_ptr create_solver(std::size_t size,
+			const pstring &solvername, net_list_t &nets);
 
 		template <typename FT>
-		plib::unique_ptr<solver::matrix_solver_t> create_solvers(
-			const pstring &sname, analog_net_t::list_t &nets);
+		solver_ptr create_solvers(
+			const pstring &sname, net_list_t &nets);
 	};
 
 } // namespace devices

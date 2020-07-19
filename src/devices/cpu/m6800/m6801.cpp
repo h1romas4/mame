@@ -37,7 +37,7 @@
 #define OC2     m_output_compare2.w.l
 #define OC2H    m_output_compare2.w.h
 #define OC2D    m_output_compare2.d
-#define TOH     m_timer_over.w.l
+#define TOH     m_timer_over.w.h
 #define TOD     m_timer_over.d
 
 // serial I/O
@@ -1016,7 +1016,7 @@ void m6801_cpu_device::device_reset()
 	OCD = 0xffff;
 	TOD = 0xffff;
 	m_timer_next = 0xffff;
-	m_ram_ctrl |= 0x40;
+	m_ram_ctrl |= 0x78;
 	m_latch09 = 0;
 
 	m_trcsr = M6801_TRCSR_TDRE;
@@ -1352,9 +1352,9 @@ uint8_t hd6301x_cpu_device::p7_data_r()
 
 void hd6301x_cpu_device::p7_data_w(uint8_t data)
 {
-	LOGPORT("Port 7 Data Register: %02x\n", data);
-
 	data &= 0x1f;
+
+	LOGPORT("Port 7 Data Register: %02x\n", data);
 
 	m_portx_data[2] = data;
 	m_out_portx_func[2](0, m_portx_data[2], 0x1f);
@@ -1369,9 +1369,11 @@ uint8_t m6801_cpu_device::tcsr_r()
 
 void m6801_cpu_device::tcsr_w(uint8_t data)
 {
+	data &= 0x1f;
+
 	LOGTIMER("Timer Control and Status Register: %02x\n", data);
 
-	m_tcsr = data;
+	m_tcsr = data | (m_tcsr & 0xe0);
 	m_pending_tcsr &= m_tcsr;
 	modified_tcsr();
 	if( !(m_cc & 0x10) )
@@ -1390,11 +1392,7 @@ uint8_t m6801_cpu_device::ch_r()
 
 uint8_t m6801_cpu_device::cl_r()
 {
-	uint8_t data = m_counter.b.l;
-
-	// HACK there should be a break here, but Coleco Adam won't boot with it present, proper fix required to the free-running counter
-	(void)data;
-	return ocrh_r();
+	return m_counter.b.l;
 }
 
 void m6801_cpu_device::ch_w(uint8_t data)
@@ -1430,7 +1428,7 @@ void m6801_cpu_device::ocrh_w(uint8_t data)
 {
 	LOGTIMER("Output Compare High Register: %02x\n", data);
 
-	if(!(m_pending_tcsr&TCSR_OCF) && !machine().side_effects_disabled())
+	if(!(m_pending_tcsr&TCSR_OCF))
 	{
 		m_tcsr &= ~TCSR_OCF;
 		modified_tcsr();
@@ -1447,7 +1445,7 @@ void m6801_cpu_device::ocrl_w(uint8_t data)
 {
 	LOGTIMER("Output Compare Low Register: %02x\n", data);
 
-	if(!(m_pending_tcsr&TCSR_OCF) && !machine().side_effects_disabled())
+	if(!(m_pending_tcsr&TCSR_OCF))
 	{
 		m_tcsr &= ~TCSR_OCF;
 		modified_tcsr();
@@ -1511,7 +1509,7 @@ void hd6301x_cpu_device::ocr2h_w(uint8_t data)
 {
 	LOGTIMER("Output Compare High Register 2: %02x\n", data);
 
-	if(!(m_pending_tcsr2&TCSR2_OCF2) && !machine().side_effects_disabled())
+	if(!(m_pending_tcsr2&TCSR2_OCF2))
 	{
 		m_tcsr2 &= ~TCSR2_OCF2;
 		modified_tcsr();
@@ -1528,7 +1526,7 @@ void hd6301x_cpu_device::ocr2l_w(uint8_t data)
 {
 	LOGTIMER("Output Compare Low Register 2: %02x\n", data);
 
-	if(!(m_pending_tcsr2&TCSR2_OCF2) && !machine().side_effects_disabled())
+	if(!(m_pending_tcsr2&TCSR2_OCF2))
 	{
 		m_tcsr2 &= ~TCSR2_OCF2;
 		modified_tcsr();

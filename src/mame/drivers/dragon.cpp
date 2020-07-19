@@ -19,6 +19,7 @@
 #include "formats/dmk_dsk.h"
 #include "formats/sdf_dsk.h"
 #include "imagedev/floppy.h"
+#include "bus/rs232/rs232.h"
 
 #include "bus/coco/dragon_amtor.h"
 #include "bus/coco/dragon_fdc.h"
@@ -27,6 +28,7 @@
 #include "bus/coco/dragon_sprites.h"
 #include "bus/coco/coco_pak.h"
 #include "bus/coco/coco_ssc.h"
+#include "bus/coco/coco_ram.h"
 #include "bus/coco/coco_orch90.h"
 #include "bus/coco/coco_gmc.h"
 #include "bus/coco/coco_psg.h"
@@ -191,12 +193,12 @@ static INPUT_PORTS_START( dragon200e )
 	PORT_INCLUDE(dragon200e_keyboard)
 	PORT_INCLUDE(coco_joystick)
 	PORT_INCLUDE(coco_analog_control)
-INPUT_PORTS_END
 
-MC6847_GET_CHARROM_MEMBER( dragon200e_state::char_rom_r )
-{
-	return m_char_rom->base()[(ch * 12 + line) & 0xfff];
-}
+	PORT_START("LK1")
+	PORT_CONFNAME(0x01, 0x01, "Inverse Video")
+	PORT_CONFSETTING(0x00, "Inverse")
+	PORT_CONFSETTING(0x01, "Normal")
+INPUT_PORTS_END
 
 void dragon_cart(device_slot_interface &device)
 {
@@ -207,6 +209,7 @@ void dragon_cart(device_slot_interface &device)
 	device.option_add("jcbspch", DRAGON_JCBSPCH);
 	device.option_add("sprites", DRAGON_SPRITES);
 	device.option_add("ssc", COCO_SSC);
+	device.option_add("ram", COCO_PAK_RAM);
 	device.option_add("orch90", COCO_ORCH90);
 	device.option_add("gmc", COCO_PAK_GMC);
 	device.option_add("pak", COCO_PAK);
@@ -343,10 +346,23 @@ void dragon64_state::dragon64(machine_config &config)
 	// acia
 	mos6551_device &acia(MOS6551(config, "acia", 0));
 	acia.set_xtal(1.8432_MHz_XTAL);
+	acia.irq_handler().set(FUNC(dragon64_state::acia_irq));
+	acia.txd_handler().set("rs232", FUNC(rs232_port_device::write_txd));
+
+	rs232_port_device &rs232(RS232_PORT(config, "rs232", default_rs232_devices, nullptr));
+	rs232.rxd_handler().set(acia, FUNC(mos6551_device::write_rxd));
+	rs232.dcd_handler().set(acia, FUNC(mos6551_device::write_dcd));
+	rs232.dsr_handler().set(acia, FUNC(mos6551_device::write_dsr));
+	rs232.cts_handler().set(acia, FUNC(mos6551_device::write_cts));
 
 	// software lists
 	SOFTWARE_LIST(config, "dragon_flex_list").set_original("dragon_flex");
 	SOFTWARE_LIST(config, "dragon_os9_list").set_original("dragon_os9");
+}
+
+WRITE_LINE_MEMBER( dragon64_state::acia_irq )
+{
+	m_maincpu->set_input_line(M6809_IRQ_LINE, state ? ASSERT_LINE : CLEAR_LINE);
 }
 
 void dragon64_state::dragon64h(machine_config &config)
@@ -363,6 +379,7 @@ void dragon200e_state::dragon200e(machine_config &config)
 	dragon64(config);
 	// video hardware
 	m_vdg->set_get_char_rom(FUNC(dragon200e_state::char_rom_r));
+	m_vdg->input_callback().set(FUNC(dragon200e_state::sam_read));
 }
 
 void d64plus_state::d64plus(machine_config &config)
@@ -526,7 +543,7 @@ COMP( 1982, dragon32,   0,        0,      dragon32,   dragon,     dragon_state, 
 COMP( 1983, dragon64,   dragon32, 0,      dragon64,   dragon,     dragon64_state,     empty_init, "Dragon Data Ltd",              "Dragon 64",                      0 )
 COMP( 19??, dragon64h,  dragon32, 0,      dragon64h,  dragon,     dragon64_state,     empty_init, "Dragon Data Ltd",              "Dragon 64 (HD6309E CPU)",        MACHINE_UNOFFICIAL )
 COMP( 1985, dragon200,  dragon32, 0,      dragon64,   dragon,     dragon64_state,     empty_init, "Eurohard S.A.",                "Dragon 200",                     0 )
-COMP( 1985, dragon200e, dragon32, 0,      dragon200e, dragon200e, dragon200e_state,   empty_init, "Eurohard S.A.",                "Dragon 200-E",                   MACHINE_NOT_WORKING )
+COMP( 1985, dragon200e, dragon32, 0,      dragon200e, dragon200e, dragon200e_state,   empty_init, "Eurohard S.A.",                "Dragon 200-E",                   0 )
 COMP( 1985, d64plus,    dragon32, 0,      d64plus,    dragon,     d64plus_state,      empty_init, "Dragon Data Ltd / Compusense", "Dragon 64 Plus",                 0 )
 COMP( 1983, tanodr64,   dragon32, 0,      tanodr64,   dragon,     dragon64_state,     empty_init, "Dragon Data Ltd / Tano Ltd",   "Tano Dragon 64 (NTSC)",          0 )
 COMP( 19??, tanodr64h,  dragon32, 0,      tanodr64h,  dragon,     dragon64_state,     empty_init, "Dragon Data Ltd / Tano Ltd",   "Tano Dragon 64 (NTSC; HD6309E)", MACHINE_UNOFFICIAL )

@@ -13,25 +13,108 @@
 #define NLTYPES_H_
 
 #include "nl_config.h"
-#include "plib/pchrono.h"
-#include "plib/pdynlib.h"
-#include "plib/pfmtlog.h"
-#include "plib/pmempool.h"
-#include "plib/pstate.h"
+
+//#include "plib/pchrono.h"
 #include "plib/pstring.h"
 #include "plib/ptime.h"
-#include "plib/putil.h"
+#include "plib/ptypes.h"
 
-#include <unordered_map>
+#include <memory>
+
+// FIXME: Move to ptypes
+namespace plib
+{
+	// FORWARD declarations
+	template <typename BASEARENA, std::size_t MINALIGN>
+	class mempool_arena;
+
+	struct aligned_arena;
+	class dynlib_base;
+
+	template<class T, bool debug_enabled>
+	class plog_base;
+
+	struct plog_level;
+} // namespace plib
 
 namespace netlist
 {
+	// -----------------------------------------------------------------------------
+	// forward definitions
+	// -----------------------------------------------------------------------------
+
+	class logic_output_t;
+	class logic_input_t;
+	class analog_net_t;
+	class logic_net_t;
+	class setup_t;
+	class nlparse_t;
+	class netlist_t;
+	class netlist_state_t;
+	class core_device_t;
+	class device_t;
+	class netlist_state_t;
+	class param_t;
+	class logic_family_desc_t;
+	class terminal_t;
+
+	class models_t;
+
+	namespace devices
+	{
+		class nld_solver;
+		class nld_mainclock;
+		class nld_base_proxy;
+		class nld_base_d_to_a_proxy;
+		class nld_base_a_to_d_proxy;
+		class nld_netlistparams;
+	} // namespace devices
+
+	namespace solver
+	{
+		class matrix_solver_t;
+	} // namespace solver
+
+	namespace detail
+	{
+		struct abstract_t;
+		class core_terminal_t;
+		class net_t;
+	} // namespace detail
+
+	namespace factory
+	{
+		class list_t;
+		class element_t;
+		struct properties;
+	} // namespace factory
+
+	template <class CX>
+	class delegator_t : public CX
+	{
+	protected:
+		using base_type = delegator_t<CX>;
+		using delegated_type = CX;
+		using delegated_type::delegated_type;
+	};
+
+} // namespace netlist
+
+
+namespace netlist
+{
+
 	/// \brief Constants and const calculations for the library
 	///
 	template<typename T>
 	struct nlconst_base : public plib::constants<T>
 	{
 		using BC = plib::constants<T>;
+
+		static inline constexpr T np_VT(T n=BC::one(), T temp=BC::T0()) noexcept
+		{ return n * temp * BC::k_b() / BC::Q_e(); }
+
+		static inline constexpr T np_Is() noexcept { return static_cast<T>(1e-15); } // NOLINT
 
 		/// \brief constant startup gmin
 		///
@@ -53,10 +136,6 @@ namespace netlist
 		///
 		static inline constexpr T diode_start_voltage() noexcept { return BC::magic(0.7); } // NOLINT
 
-		static inline constexpr T np_VT(T n=BC::one(), T temp=BC::T0()) noexcept
-		{ return n * temp * BC::k_b() / BC::Q_e(); }
-
-		static inline constexpr T np_Is() noexcept { return static_cast<T>(1e-15); } // NOLINT
 	};
 
 	/// \brief nlconst_base struct specialized for nl_fptype.
@@ -71,6 +150,16 @@ namespace netlist
 	/// The choice has little to no impact on performance.
 	///
 	using netlist_sig_t = std::uint32_t;
+
+	/// \brief The memory pool for netlist objects
+	///
+	/// \note This is not the right location yet.
+	///
+
+	using device_arena = std::conditional_t<config::use_mempool::value,
+		plib::mempool_arena<plib::aligned_arena, NL_MEMPOOL_ALIGN>,
+		plib::aligned_arena>;
+	using host_arena   = plib::aligned_arena;
 
 	/// \brief Interface definition for netlist callbacks into calling code
 	///
@@ -98,7 +187,7 @@ namespace netlist
 		/// of a callbacks_t implementation to optionally provide such a collection
 		/// of symbols.
 		///
-		virtual plib::unique_ptr<plib::dynlib_base> static_solver_lib() const;
+		virtual std::unique_ptr<plib::dynlib_base> static_solver_lib() const;
 	};
 
 	using log_type =  plib::plog_base<callbacks_t, NL_DEBUG>;
@@ -106,28 +195,6 @@ namespace netlist
 	//============================================================
 	//  Types needed by various includes
 	//============================================================
-
-	/// \brief The memory pool for netlist objects
-	///
-	/// \note This is not the right location yet.
-	///
-
-#if (NL_USE_MEMPOOL)
-	using nlmempool = plib::mempool;
-#else
-	using nlmempool = plib::aligned_arena;
-#endif
-
-	/// \brief Owned pointer type for pooled allocations.
-	///
-	template <typename T>
-	using owned_pool_ptr = nlmempool::owned_pool_ptr<T>;
-
-	/// \brief Unique pointer type for pooled allocations.
-	///
-
-	template <typename T>
-	using unique_pool_ptr = nlmempool::unique_pool_ptr<T>;
 
 	namespace detail {
 
@@ -141,14 +208,9 @@ namespace netlist
 
 	} // namespace detail
 
-#if (PHAS_INT128)
-	//using netlist_time = plib::ptime<INT128, NETLIST_INTERNAL_RES>;
-	using netlist_time = plib::ptime<std::int64_t, NETLIST_INTERNAL_RES>;
-	using netlist_time_ext = plib::ptime<INT128, NETLIST_INTERNAL_RES>;
-#else
-	using netlist_time = plib::ptime<std::int64_t, NETLIST_INTERNAL_RES>;
-	using netlist_time_ext = netlist_time;
-#endif
+	using netlist_time = plib::ptime<std::int64_t, config::INTERNAL_RES::value>;
+	using netlist_time_ext = plib::ptime<std::conditional<NL_PREFER_INT128 && plib::compile_info::has_int128::value, INT128, std::int64_t>::type, config::INTERNAL_RES::value>;
+
 	static_assert(noexcept(netlist_time::from_nsec(1)), "Not evaluated as constexpr");
 
 	//============================================================
@@ -159,15 +221,63 @@ namespace netlist
 	template <typename T> inline constexpr netlist_time NLTIME_FROM_US(T &&t) noexcept { return netlist_time::from_usec(t); }
 	template <typename T> inline constexpr netlist_time NLTIME_FROM_MS(T &&t) noexcept { return netlist_time::from_msec(t); }
 
+	struct desc_base
+	{
+		/// \brief: used to hold one static netlist_time value
+		///
+		template<netlist_time::internal_type value0>
+		struct times_ns1
+		{
+			static constexpr netlist_time value(std::size_t N = 0)
+			{
+				plib::unused_var(N);
+				return NLTIME_FROM_NS(value0);
+			}
+		};
+
+		template <netlist_time::internal_type value0>
+		using time_ns = times_ns1<value0>;
+
+		/// \brief: used to hold two static netlist_time values
+		///
+		template<netlist_time::internal_type value0,
+			netlist_time::internal_type  value1>
+		struct times_ns2
+		{
+			static constexpr netlist_time value(std::size_t N)
+			{
+				return NLTIME_FROM_NS(N == 0 ? value0 : value1);
+			}
+		};
+
+		/// \brief: used to hold three static netlist_time values
+		///
+		template<netlist_time::internal_type value0,
+			netlist_time::internal_type value1,
+			netlist_time::internal_type value2>
+		struct times_ns3
+		{
+			static constexpr netlist_time value(std::size_t N)
+			{
+				return NLTIME_FROM_NS(N == 0 ? value0 :
+						N == 1 ? value1 :
+								 value2);
+			}
+		};
+
+		/// \brief: used to define a constant in device description struct
+		///
+		/// See the 74125 implementation
+		///
+		template <std::size_t V>
+		using desc_const =  std::integral_constant<const std::size_t, V>;
+
+		template <typename T, T V>
+		using desc_const_t =  std::integral_constant<const T, V>;
+	};
+
+
 } // namespace netlist
 
-namespace plib {
-
-	template<>
-	inline void state_manager_t::save_item(const void *owner, netlist::netlist_time &state, const pstring &stname)
-	{
-		save_state_ptr(owner, stname, datatype_t(sizeof(netlist::netlist_time::internal_type), true, false), 1, state.get_internaltype_ptr());
-	}
-} // namespace plib
 
 #endif // NLTYPES_H_

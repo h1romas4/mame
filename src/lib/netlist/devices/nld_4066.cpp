@@ -9,7 +9,6 @@
 
 #include "netlist/analog/nlid_twoterm.h"
 #include "netlist/solver/nld_solver.h"
-#include "nlid_system.h"
 
 // This is an experimental approach to implement the analog switch.
 // This will make the switch a 3 terminal element which is completely
@@ -31,13 +30,12 @@ namespace netlist
 	{
 	NETLIB_OBJECT(CD4066_GATE)
 	{
-		NETLIB_CONSTRUCTOR(CD4066_GATE)
-		NETLIB_FAMILY("CD4XXX")
-		, m_supply(*this, "VDD", "VSS")
+		NETLIB_CONSTRUCTOR_MODEL(CD4066_GATE, "CD4XXX")
 		, m_R(*this, "R")
-		, m_control(*this, "CTL")
+		, m_control(*this, "CTL", NETLIB_DELEGATE(control))
 		, m_base_r(*this, "BASER", nlconst::magic(270.0))
 		, m_last(*this, "m_last", false)
+		, m_supply(*this)
 		{
 		}
 
@@ -48,7 +46,8 @@ namespace netlist
 			m_R.set_R(plib::reciprocal(exec().gmin()));
 		}
 
-		NETLIB_UPDATEI()
+	private:
+		NETLIB_HANDLERI(control)
 		{
 			nl_fptype sup = (m_supply.VCC().Q_Analog() - m_supply.GND().Q_Analog());
 			nl_fptype in = m_control() - m_supply.GND().Q_Analog();
@@ -73,27 +72,25 @@ namespace netlist
 			}
 		}
 
-	private:
-		nld_power_pins             m_supply;
 		analog::NETLIB_SUB(R_base) m_R;
 		analog_input_t             m_control;
 		param_fp_t                 m_base_r;
 		state_var<bool>            m_last;
+		nld_power_pins             m_supply;
 	};
 
 
 	NETLIB_OBJECT(CD4066_GATE_DYNAMIC)
 	{
-		NETLIB_CONSTRUCTOR(CD4066_GATE_DYNAMIC)
-		NETLIB_FAMILY("CD4XXX")
-		, m_supply(*this, "VDD", "VSS")
-		, m_R(*this, "R", true)
-		, m_DUM1(*this, "_DUM1", true)
-		, m_DUM2(*this, "_DUM2", true)
+		NETLIB_CONSTRUCTOR_MODEL(CD4066_GATE_DYNAMIC, "CD4XXX")
+		, m_R(*this, "R", NETLIB_DELEGATE(analog_input_changed))
+		, m_DUM1(*this, "_DUM1", NETLIB_DELEGATE(analog_input_changed))
+		, m_DUM2(*this, "_DUM2", NETLIB_DELEGATE(analog_input_changed))
 		, m_base_r(*this, "BASER", nlconst::magic(270.0))
 		, m_last(*this, "m_last", false)
+		, m_supply(*this)
 		{
-			register_subalias("CTL", m_DUM1.P());   // Cathode
+			register_subalias("CTL", m_DUM1.P());
 
 			connect(m_DUM1.P(), m_DUM2.P());
 			connect(m_DUM1.N(), m_R.P());
@@ -104,10 +101,6 @@ namespace netlist
 		{
 			// Start in off condition
 			// FIXME: is ROFF correct?
-		}
-
-		NETLIB_UPDATEI()
-		{
 		}
 
 		NETLIB_UPDATE_TERMINALSI()
@@ -132,12 +125,18 @@ namespace netlist
 		NETLIB_IS_DYNAMIC(true)
 
 	private:
-		nld_power_pins             m_supply;
+
+		NETLIB_HANDLERI(analog_input_changed)
+		{
+			m_R.solve_now();
+		}
+
 		analog::nld_twoterm        m_R;
 		analog::nld_twoterm        m_DUM1;
 		analog::nld_twoterm        m_DUM2;
 		param_fp_t                 m_base_r;
 		state_var<bool>            m_last;
+		nld_power_pins             m_supply;
 	};
 
 #if !USE_DYNAMIC_APPROACH

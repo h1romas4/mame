@@ -166,7 +166,9 @@ mame_ui_manager::mame_ui_manager(running_machine &machine)
 	, m_mouse_bitmap(32, 32)
 	, m_mouse_arrow_texture(nullptr)
 	, m_mouse_show(false)
-	, m_target_font_height(0) {}
+	, m_target_font_height(0)
+	, m_has_warnings(false)
+{ }
 
 mame_ui_manager::~mame_ui_manager()
 {
@@ -329,20 +331,24 @@ void mame_ui_manager::display_startup_screens(bool first_time)
 		switch (state)
 		{
 		case 0:
-			if (show_warnings)
-				messagebox_text = machine_info().warnings_string();
+			if (show_gameinfo)
+				messagebox_text = machine_info().game_info_string();
 			if (!messagebox_text.empty())
 			{
+				messagebox_text.append("\n\nPress any key to continue");
 				set_handler(ui_callback_type::MODAL, std::bind(&mame_ui_manager::handler_messagebox_anykey, this, _1));
-				messagebox_backcolor = machine_info().warnings_color();
 			}
 			break;
 
 		case 1:
-			if (show_gameinfo)
-				messagebox_text = machine_info().game_info_string();
-			if (!messagebox_text.empty())
+			messagebox_text = machine_info().warnings_string();
+			m_has_warnings = !messagebox_text.empty();
+			if (m_has_warnings && show_warnings)
+			{
+				messagebox_text.append("\n\nPress any key to continue");
 				set_handler(ui_callback_type::MODAL, std::bind(&mame_ui_manager::handler_messagebox_anykey, this, _1));
+				messagebox_backcolor = machine_info().warnings_color();
+			}
 			break;
 
 		case 2:
@@ -1210,7 +1216,7 @@ uint32_t mame_ui_manager::handler_ingame(render_container &container)
 	if (machine().ui_input().pressed(IPT_UI_RECORD_MNG))
 		machine().video().toggle_record_movie(movie_recording::format::MNG);
 
-	// toggle MNG recording
+	// toggle AVI recording
 	if (machine().ui_input().pressed(IPT_UI_RECORD_AVI))
 		machine().video().toggle_record_movie(movie_recording::format::AVI);
 
@@ -1383,7 +1389,7 @@ std::vector<ui::menu_item> mame_ui_manager::slider_init(running_machine &machine
 		{
 			void *param = (void *)&exec.device();
 			std::string str = string_format(_("Overclock CPU %1$s"), exec.device().tag());
-			m_sliders.push_back(slider_alloc(SLIDER_ID_OVERCLOCK + slider_index++, str.c_str(), 10, 1000, 2000, 1, param));
+			m_sliders.push_back(slider_alloc(SLIDER_ID_OVERCLOCK + slider_index++, str.c_str(), 100, 1000, 4000, 10, param));
 		}
 		for (device_sound_interface &snd : sound_interface_iterator(machine.root_device()))
 		{
@@ -1392,7 +1398,7 @@ std::vector<ui::menu_item> mame_ui_manager::slider_init(running_machine &machine
 			{
 				void *param = (void *)&snd.device();
 				std::string str = string_format(_("Overclock %1$s sound"), snd.device().tag());
-				m_sliders.push_back(slider_alloc(SLIDER_ID_OVERCLOCK + slider_index++, str.c_str(), 10, 1000, 2000, 1, param));
+				m_sliders.push_back(slider_alloc(SLIDER_ID_OVERCLOCK + slider_index++, str.c_str(), 100, 1000, 4000, 10, param));
 			}
 		}
 	}
@@ -1660,7 +1666,7 @@ int32_t mame_ui_manager::slider_refresh(running_machine &machine, void *arg, int
 	}
 
 	if (str)
-		*str = string_format(_("%1$.3ffps"), screen->frame_period().as_hz());
+		*str = string_format(_("%1$.3f" UTF8_NBSP "Hz"), screen->frame_period().as_hz());
 	refresh = screen->frame_period().as_hz();
 	return floor((refresh - defrefresh) * 1000.0 + 0.5);
 }

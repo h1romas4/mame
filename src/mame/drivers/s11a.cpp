@@ -55,27 +55,24 @@ void s11a_state::s11a_audio_map(address_map &map)
 void s11a_state::s11a_bg_map(address_map &map)
 {
 	map(0x0000, 0x07ff).mirror(0x1800).ram();
-	map(0x2000, 0x2001).mirror(0x1ffe).rw(m_ym, FUNC(ym2151_device::read), FUNC(ym2151_device::write));
+	map(0x2000, 0x2001).mirror(0x1ffe).rw(m_ym2151, FUNC(ym2151_device::read), FUNC(ym2151_device::write));
 	map(0x4000, 0x4003).mirror(0x1ffc).rw(m_pia40, FUNC(pia6821_device::read), FUNC(pia6821_device::write));
-	map(0x7800, 0x7fff).w(FUNC(s11a_state::bgbank_w));
+	map(0x7800, 0x7800).mirror(0x07ff).w(FUNC(s11a_state::bgbank_w));
 	map(0x8000, 0xffff).bankr("bgbank");
 }
 
 static INPUT_PORTS_START( s11a )
-	PORT_START("X0")
-	PORT_BIT( 0xff, IP_ACTIVE_LOW, IPT_UNUSED )
-
-	PORT_START("X1")
-	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_TILT )
-	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_OTHER )
+	PORT_START("SW.0")
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_TILT ) // always plumb-bob tilt
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_RSHIFT) // a relay from the power section
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_START )
 	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_COIN3 )
 	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_COIN2 )
 	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_COIN1 )
-	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_OTHER )
-	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_OTHER )
+	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_LSHIFT) // usually slam tilt
+	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_RCONTROL) // usually high score reset
 
-	PORT_START("X2")
+	PORT_START("SW.1")
 	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_A)
 	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_S)
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_D)
@@ -85,7 +82,7 @@ static INPUT_PORTS_START( s11a )
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_J)
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_K)
 
-	PORT_START("X4")
+	PORT_START("SW.2")
 	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_L)
 	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_Z)
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_C)
@@ -95,7 +92,7 @@ static INPUT_PORTS_START( s11a )
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_M)
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_COMMA)
 
-	PORT_START("X8")
+	PORT_START("SW.3")
 	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_STOP)
 	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_SLASH)
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_COLON)
@@ -105,7 +102,7 @@ static INPUT_PORTS_START( s11a )
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_EQUALS)
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_BACKSPACE)
 
-	PORT_START("X10")
+	PORT_START("SW.4")
 	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_OPENBRACE)
 	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_CLOSEBRACE)
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_BACKSLASH)
@@ -115,7 +112,17 @@ static INPUT_PORTS_START( s11a )
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_UP)
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_DOWN)
 
-	PORT_START("X20")
+	PORT_START("SW.5")
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_DEL)
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_HOME)
+	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_END)
+	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_PGUP)
+	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_PGDN)
+	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_0_PAD)
+	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_DEL_PAD)
+	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_ENTER_PAD)
+
+	PORT_START("SW.6")
 	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_Q)
 	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_W)
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_E)
@@ -125,11 +132,15 @@ static INPUT_PORTS_START( s11a )
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_I)
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_O)
 
-	PORT_START("X40")
-	PORT_BIT( 0xff, IP_ACTIVE_LOW, IPT_UNKNOWN )
-
-	PORT_START("X80")
-	PORT_BIT( 0xff, IP_ACTIVE_LOW, IPT_UNKNOWN )
+	PORT_START("SW.7")
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_2_PAD)
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_3_PAD)
+	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_7_PAD)
+	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_8_PAD)
+	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_9_PAD)
+	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_SLASH_PAD)
+	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_ASTERISK)
+	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_OTHER ) PORT_CODE(KEYCODE_PLUS_PAD)
 
 	PORT_START("DIAGS")
 	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_OTHER) PORT_NAME("Audio Diag") PORT_CODE(KEYCODE_1_PAD) PORT_CHANGED_MEMBER(DEVICE_SELF, s11a_state, audio_nmi, 1)
@@ -148,7 +159,7 @@ MACHINE_RESET_MEMBER( s11a_state, s11a )
 	membank("bgbank")->set_entry(0);
 }
 
-WRITE8_MEMBER( s11a_state::dig0_w )
+void s11a_state::dig0_w(uint8_t data)
 {
 	data &= 0x7f;
 	set_strobe(data & 15);
@@ -160,16 +171,19 @@ WRITE8_MEMBER( s11a_state::dig0_w )
 	set_segment2(0);
 }
 
-WRITE8_MEMBER( s11a_state::bgbank_w )
+void s11a_state::bgbank_w(uint8_t data)
 {
 	membank("bgbank")->set_entry(data & 0x03);
 }
 
 void s11a_state::init_s11a()
 {
-	uint8_t *BGROM = memregion("bgcpu")->base();
-	membank("bgbank")->configure_entries(0, 4, &BGROM[0x10000], 0x8000);
-	membank("bgbank")->set_entry(0);
+	if (m_bgcpu)
+	{
+		uint8_t *BGROM = memregion("bgcpu")->base();
+		membank("bgbank")->configure_entries(0, 4, &BGROM[0x10000], 0x8000);
+		membank("bgbank")->set_entry(0);
+	}
 	s11_state::init_s11();
 }
 
@@ -179,6 +193,8 @@ void s11a_state::s11a(machine_config &config)
 	M6808(config, m_maincpu, XTAL(4'000'000));
 	m_maincpu->set_addrmap(AS_PROGRAM, &s11a_state::s11a_main_map);
 	MCFG_MACHINE_RESET_OVERRIDE(s11a_state, s11a)
+	INPUT_MERGER_ANY_HIGH(config, m_mainirq).output_handler().set(FUNC(s11_state::main_irq));
+	INPUT_MERGER_ANY_HIGH(config, m_piairq).output_handler().set(FUNC(s11_state::pia_irq));
 
 	/* Video */
 	config.set_default_layout(layout_s11a);
@@ -189,48 +205,51 @@ void s11a_state::s11a(machine_config &config)
 	/* Devices */
 	PIA6821(config, m_pia21, 0);
 	m_pia21->readpa_handler().set(FUNC(s11_state::sound_r));
+	m_pia21->set_port_a_input_overrides_output_mask(0xff);
 	m_pia21->writepa_handler().set(FUNC(s11_state::sound_w));
 	m_pia21->writepb_handler().set(FUNC(s11_state::sol2_w));
 	m_pia21->ca2_handler().set(FUNC(s11_state::pia21_ca2_w));
 	m_pia21->cb2_handler().set(FUNC(s11_state::pia21_cb2_w));
-	m_pia21->irqa_handler().set(FUNC(s11_state::pia_irq));
-	m_pia21->irqb_handler().set(FUNC(s11_state::pia_irq));
+	m_pia21->irqa_handler().set(m_piairq, FUNC(input_merger_device::in_w<1>));
+	m_pia21->irqb_handler().set(m_piairq, FUNC(input_merger_device::in_w<2>));
 
 	PIA6821(config, m_pia24, 0);
 	m_pia24->writepa_handler().set(FUNC(s11_state::lamp0_w));
 	m_pia24->writepb_handler().set(FUNC(s11_state::lamp1_w));
 	m_pia24->cb2_handler().set(FUNC(s11_state::pia24_cb2_w));
-	m_pia24->irqa_handler().set(FUNC(s11_state::pia_irq));
-	m_pia24->irqb_handler().set(FUNC(s11_state::pia_irq));
+	m_pia24->irqa_handler().set(m_piairq, FUNC(input_merger_device::in_w<3>));
+	m_pia24->irqb_handler().set(m_piairq, FUNC(input_merger_device::in_w<4>));
 
 	PIA6821(config, m_pia28, 0);
 	m_pia28->readpa_handler().set(FUNC(s11_state::pia28_w7_r));
+	m_pia28->set_port_a_input_overrides_output_mask(0xff);
 	m_pia28->writepa_handler().set(FUNC(s11a_state::dig0_w));
 	m_pia28->writepb_handler().set(FUNC(s11_state::dig1_w));
 	m_pia28->ca2_handler().set(FUNC(s11_state::pia28_ca2_w));
 	m_pia28->cb2_handler().set(FUNC(s11_state::pia28_cb2_w));
-	m_pia28->irqa_handler().set(FUNC(s11_state::pia_irq));
-	m_pia28->irqb_handler().set(FUNC(s11_state::pia_irq));
+	m_pia28->irqa_handler().set(m_piairq, FUNC(input_merger_device::in_w<5>));
+	m_pia28->irqb_handler().set(m_piairq, FUNC(input_merger_device::in_w<6>));
 
 	PIA6821(config, m_pia2c, 0);
 	m_pia2c->writepa_handler().set(FUNC(s11_state::pia2c_pa_w));
 	m_pia2c->writepb_handler().set(FUNC(s11_state::pia2c_pb_w));
-	m_pia2c->irqa_handler().set(FUNC(s11_state::pia_irq));
-	m_pia2c->irqb_handler().set(FUNC(s11_state::pia_irq));
+	m_pia2c->irqa_handler().set(m_piairq, FUNC(input_merger_device::in_w<7>));
+	m_pia2c->irqb_handler().set(m_piairq, FUNC(input_merger_device::in_w<8>));
 
 	PIA6821(config, m_pia30, 0);
 	m_pia30->readpa_handler().set(FUNC(s11_state::switch_r));
+	m_pia30->set_port_a_input_overrides_output_mask(0xff);
 	m_pia30->writepb_handler().set(FUNC(s11_state::switch_w));
 	m_pia30->cb2_handler().set(FUNC(s11_state::pia30_cb2_w));
-	m_pia30->irqa_handler().set(FUNC(s11_state::pia_irq));
-	m_pia30->irqb_handler().set(FUNC(s11_state::pia_irq));
+	m_pia30->irqa_handler().set(m_piairq, FUNC(input_merger_device::in_w<9>));
+	m_pia30->irqb_handler().set(m_piairq, FUNC(input_merger_device::in_w<10>));
 
 	PIA6821(config, m_pia34, 0);
 	m_pia34->writepa_handler().set(FUNC(s11_state::pia34_pa_w));
 	m_pia34->writepb_handler().set(FUNC(s11_state::pia34_pb_w));
 	m_pia34->cb2_handler().set(FUNC(s11_state::pia34_cb2_w));
-	m_pia34->irqa_handler().set(FUNC(s11_state::pia_irq));
-	m_pia34->irqb_handler().set(FUNC(s11_state::pia_irq));
+	m_pia34->irqa_handler().set(m_piairq, FUNC(input_merger_device::in_w<11>));
+	m_pia34->irqb_handler().set(m_piairq, FUNC(input_merger_device::in_w<12>));
 
 	NVRAM(config, "nvram", nvram_device::DEFAULT_ALL_1);
 
@@ -238,6 +257,7 @@ void s11a_state::s11a(machine_config &config)
 	M6802(config, m_audiocpu, XTAL(4'000'000));
 	m_audiocpu->set_ram_enable(false);
 	m_audiocpu->set_addrmap(AS_PROGRAM, &s11a_state::s11a_audio_map);
+	INPUT_MERGER_ANY_HIGH(config, m_audioirq).output_handler().set_inputline(m_audiocpu, M6802_IRQ_LINE);
 
 	SPEAKER(config, "speaker").front_center();
 	MC1408(config, "dac", 0).add_route(ALL_OUTPUTS, "speaker", 0.25);
@@ -250,20 +270,21 @@ void s11a_state::s11a(machine_config &config)
 
 	PIA6821(config, m_pias, 0);
 	m_pias->readpa_handler().set(FUNC(s11_state::sound_r));
+	m_pias->set_port_a_input_overrides_output_mask(0xff);
 	m_pias->writepa_handler().set(FUNC(s11_state::sound_w));
 	m_pias->writepb_handler().set("dac", FUNC(dac_byte_interface::data_w));
 	m_pias->cb2_handler().set(FUNC(s11_state::pia40_cb2_w));
-	m_pias->irqa_handler().set_inputline(m_audiocpu, M6802_IRQ_LINE);
-	m_pias->irqa_handler().set_inputline(m_audiocpu, M6802_IRQ_LINE);
+	m_pias->irqa_handler().set(m_audioirq, FUNC(input_merger_device::in_w<0>));
+	m_pias->irqb_handler().set(m_audioirq, FUNC(input_merger_device::in_w<1>));
 
 	/* Add the background music card */
 	MC6809E(config, m_bgcpu, XTAL(8'000'000) / 4); // MC68B09E
 	m_bgcpu->set_addrmap(AS_PROGRAM, &s11a_state::s11a_bg_map);
 
 	SPEAKER(config, "bg").front_center();
-	YM2151(config, m_ym, XTAL(3'579'545));
-	m_ym->irq_handler().set(FUNC(s11a_state::ym2151_irq_w));
-	m_ym->add_route(ALL_OUTPUTS, "bg", 0.50);
+	YM2151(config, m_ym2151, XTAL(3'579'545));
+	m_ym2151->irq_handler().set(FUNC(s11a_state::ym2151_irq_w));
+	m_ym2151->add_route(ALL_OUTPUTS, "bg", 0.50);
 
 	MC1408(config, "dac1", 0).add_route(ALL_OUTPUTS, "bg", 0.25);
 

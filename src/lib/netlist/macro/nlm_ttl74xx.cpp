@@ -1,10 +1,7 @@
 // license:GPL-2.0+
 // copyright-holders:Couriersud
-#include "nlm_ttl74xx.h"
 
-#include "netlist/devices/nld_schmitt.h"
-#include "netlist/devices/nld_system.h"
-
+#include "netlist/devices/net_lib.h"
 
 /*
  *  DM7400: Quad 2-Input NAND Gates
@@ -299,7 +296,7 @@ static NETLIST_START(TTL_7414_DIP)
 	NET_C(A.VCC, B.VCC, C.VCC, D.VCC, E.VCC, F.VCC)
 
 	DIPPINS(   /*       +--------------+      */
-		A.A,   /*    A1 |1     ++    14| VCC  */ VCC.I,
+		A.A,   /*    A1 |1     ++    14| VCC  */ A.VCC,
 		A.Q,   /*    Y1 |2           13| A6   */ F.A,
 		B.A,   /*    A2 |3           12| Y6   */ F.Q,
 		B.Q,   /*    Y2 |4    7414   11| A5   */ E.A,
@@ -322,7 +319,7 @@ static NETLIST_START(TTL_74LS14_DIP)
 	NET_C(A.VCC, B.VCC, C.VCC, D.VCC, E.VCC, F.VCC)
 
 	DIPPINS(   /*       +--------------+      */
-		A.A,   /*    A1 |1     ++    14| VCC  */ VCC.I,
+		A.A,   /*    A1 |1     ++    14| VCC  */ A.VCC,
 		A.Q,   /*    Y1 |2           13| A6   */ F.A,
 		B.A,   /*    A2 |3           12| Y6   */ F.Q,
 		B.Q,   /*    Y2 |4   74LS14  11| A5   */ E.A,
@@ -383,6 +380,44 @@ NETLIST_END()
 static NETLIST_START(TTL_7420_DIP)
 	TTL_7420_GATE(A)
 	TTL_7420_GATE(B)
+
+	NET_C(A.VCC, B.VCC)
+	NET_C(A.GND, B.GND)
+	NC_PIN(NC)
+
+	DIPPINS(  /*       +--------------+      */
+		A.A,  /*    A1 |1     ++    14| VCC  */ A.VCC,
+		A.B,  /*    B1 |2           13| D2   */ B.D,
+		NC.I, /*    NC |3           12| C2   */ B.C,
+		A.C,  /*    C1 |4    7420   11| NC   */ NC.I,
+		A.D,  /*    D1 |5           10| B2   */ B.B,
+		A.Q,  /*    Y1 |6            9| A2   */ B.A,
+		A.GND,/*   GND |7            8| Y2   */ B.Q
+			  /*       +--------------+      */
+	)
+NETLIST_END()
+
+/*
+ *  DM7421: Dual 4-Input AND Gates
+ *
+ *                  ___
+ *              Y = ABCD
+ *          +---+---+---+---++---+
+ *          | A | B | C | D || Y |
+ *          +===+===+===+===++===+
+ *          | X | X | X | 0 || 0 |
+ *          | X | X | 0 | X || 0 |
+ *          | X | 0 | X | X || 0 |
+ *          | 0 | X | X | X || 0 |
+ *          | 1 | 1 | 1 | 1 || 1 |
+ *          +---+---+---+---++---+
+ *
+ *  Naming conventions follow National Semiconductor datasheet *
+ */
+
+static NETLIST_START(TTL_7421_DIP)
+	TTL_7421_GATE(A)
+	TTL_7421_GATE(B)
 
 	NET_C(A.VCC, B.VCC)
 	NET_C(A.GND, B.GND)
@@ -667,6 +702,269 @@ static NETLIST_START(TTL_74107_DIP)
 NETLIST_END()
 #endif
 
+//- Identifier:  TTL_74121_DIP
+//- Title: DM74121 One-Shot with Clear and Complementary Outputs
+//- Description: The DM74121 is a monostable multivibrator featuring both
+//-   positive and negative edge triggering with complementary
+//-   outputs. An internal 2kΩ timing resistor is provided for
+//-   design convenience minimizing component count and layout problems. this device can be used with a single external capacitor. Inputs (A) are active-LOW trigger transition
+//-   inputs and input (B) is and active-HIGH transition Schmitttrigger input that allows jitter-free triggering from inputs with
+//-   transition rates as slow as 1 volt/second. A high immunity
+//-   to VCC noise of typically 1.5V is also provided by internal
+//-   circuitry at the input stage.
+//-   To obtain optimum and trouble free operation please read
+//-   operating rules and one-shot application notes carefully
+//-   and observe recommendations.
+//-
+//- Pinalias: QQ,NC,A1,A2,B,Q,GND,NC,RINT,C,RC,NC,NC,VCC
+//- Package: DIP
+//- NamingConvention: Naming conventions follow Fairchild Semiconductor datasheet
+//- Limitations:
+//-    Timing inaccuracies may occur for capacitances < 1nF. Please consult datasheet
+//-
+//- Example: 74123.cpp,74123_example
+//-
+//- FunctionTable:
+//-    https://pdf1.alldatasheet.com/datasheet-pdf/view/50894/FAIRCHILD/74121.html
+//-
+static NETLIST_START(TTL_74121_DIP)
+
+	TTL_74121(A)
+	RES(RINT, RES_K(2))
+	RES(RD,   RES_M(1000))
+
+	ALIAS(1, A.QQ)
+	//ALIAS(2", ); NC
+	ALIAS(3, A.A1)
+	ALIAS(4, A.A2)
+	ALIAS(5, A.B)
+	ALIAS(6, A.Q)
+	ALIAS(7, A.GND)
+
+	//ALIAS(8", ); NC
+	ALIAS(9,  RINT.1) // RINT
+	ALIAS(10, A.C) // CEXT
+	ALIAS(11, A.RC) // REXT
+	//ALIAS(12", ); NC
+	//ALIAS(13", ); NC
+	ALIAS(14, A.VCC)
+
+	NET_C(RINT.2, A.RC)
+
+	// Avoid error messages if RINT is not used.
+	NET_C(RINT.1, RD.2)
+	NET_C(RD.1, A.GND)
+
+NETLIST_END()
+
+//- Identifier:  TTL_74123_DIP
+//- Title: DM74123 Dual Retriggerable One-Shot with Clear and Complementary Outputs
+//- Description: The DM74123 is a dual retriggerable monostable multivibrator
+//-   capable of generating output pulses from a few
+//-   nano-seconds to extremely long duration up to 100% duty
+//-   cycle. Each device has three inputs permitting the choice of
+//-   either leading-edge or trailing edge triggering. Pin (A) is an
+//-   active-LOW transition trigger input and pin (B) is an activeHIGH transition trigger input. A LOW at the clear (CLR)
+//-   input terminates the output pulse: which also inhibits triggering. An internal connection from CLR to the input gate
+//-   makes it possible to trigger the circuit by a positive-going
+//-   signal on CLR as shown in the Truth Table.
+//-
+//-   To obtain the best and trouble free operation from this
+//-   device please read the Operating Rules as well as the
+//-   One–Shot Application Notes carefully and observe recommendations.
+//-
+//- Pinalias: A1,B1,CLRQ1,QQ1,Q2,C2,RC2,GND,A2,B2,CLRQ2,QQ2,Q1,C1,RC1,VCC
+//- Package: DIP
+//- NamingConvention: Naming conventions follow Fairchild Semiconductor datasheet
+//- Limitations:
+//-    Timing inaccuracies may occur for capacitances < 1nF. Please consult datasheet
+//-
+//- Example: 74123.cpp,74123_example
+//-
+//- FunctionTable:
+//-    https://pdf1.alldatasheet.com/datasheet-pdf/view/50893/FAIRCHILD/DM74123.html
+//-
+static NETLIST_START(TTL_74123_DIP)
+
+	TTL_74123(A)
+	TTL_74123(B)
+
+	ALIAS(1, A.A)
+	ALIAS(2, A.B)
+	ALIAS(3, A.CLRQ)
+	ALIAS(4, A.QQ)
+	ALIAS(5, B.Q)
+	ALIAS(6, B.C) // CEXT
+	ALIAS(7, B.RC) // REXT
+	ALIAS(8, A.GND)
+
+	ALIAS(9, B.A)
+	ALIAS(10, B.B)
+	ALIAS(11, B.CLRQ)
+	ALIAS(12, B.QQ)
+	ALIAS(13, A.Q)
+	ALIAS(14, A.C) // CEXT
+	ALIAS(15, A.RC) // REXT
+	ALIAS(16, A.VCC)
+
+	NET_C(A.VCC, B.VCC)
+	NET_C(A.GND, B.GND)
+NETLIST_END()
+
+//- Identifier:  TTL_9602_DIP
+//- Title: DM9602 Dual Retriggerable, Resettable One Shots
+//- Description: These dual resettable, retriggerable one shots have two
+//-   inputs per function; one which is active HIGH, and one
+//-   which is active LOW. This allows the designer to employ
+//-   either leading-edge or trailing-edge triggering, which is
+//-   independent of input transition times. When input conditions for triggering are met, a new cycle starts and the
+//-   external capacitor is allowed to rapidly discharge and then
+//-   charge again. The retriggerable feature permits output
+//-   pulse widths to be extended. In fact a continuous true output can be maintained by having an input cycle time which
+//-   is shorter than the output cycle time. The output pulse may
+//-   then be terminated at any time by applying a LOW logic
+//-   level to the RESET pin. Retriggering may be inhibited by
+//-   either connecting the Q output to an active HIGH input, or
+//-   the Q output to an active LOW input.
+//-   The DM74123 is a dual retriggerable monostable multivibrator
+//-
+//- Pinalias: C1,RC1,CLRQ1,B1,A1,Q1,QQ1,GND,QQ2,Q2,A2,B2,CLRQ2,RC2,C2,VCC
+//- Package: DIP
+//- NamingConvention: Naming conventions follow Fairchild Semiconductor datasheet
+//- Limitations:
+//-    Timing inaccuracies may occur for capacitances < 1nF. Please consult datasheet
+//-
+//- Example: 74123.cpp,74123_example
+//-
+//- FunctionTable:
+//-    https://pdf1.alldatasheet.com/datasheet-pdf/view/51137/FAIRCHILD/DM9602.html
+//-
+static NETLIST_START(TTL_9602_DIP)
+
+	TTL_9602(A)
+	TTL_9602(B)
+
+	ALIAS(1, A.C) // C1
+	ALIAS(2, A.RC) // RC1
+	ALIAS(3, A.CLRQ)
+	ALIAS(4, A.B)
+	ALIAS(5, A.A)
+	ALIAS(6, A.Q)
+	ALIAS(7, A.QQ)
+	ALIAS(8, A.GND)
+
+	ALIAS(9, B.QQ)
+	ALIAS(10, B.Q)
+	ALIAS(11, B.A)
+	ALIAS(12, B.B)
+	ALIAS(13, B.CLRQ)
+	ALIAS(14, B.RC) // RC2
+	ALIAS(15, B.C) // C2
+	ALIAS(16, A.VCC)
+
+	NET_C(A.VCC, B.VCC)
+	NET_C(A.GND, B.GND)
+NETLIST_END()
+
+//- Identifier:  TTL_74125_DIP
+//- Title: SN74125 QUADRUPLE BUS BUFFERS WITH 3-STATE OUTPUTS
+//- Description: These bus buffers feature three-state outputs
+//-    that, when enabled, have the low impedance characteristics of a
+//-    TTL output with additional drive capability at high logic levels
+//-    to permit driving heavily loaded bus lines without external
+//-    pullup resistors. When disabled, both output transistors are turned
+//-    off, presenting a high-impedance state to the bus so the output will
+//-    act neither as a significant load nor as a driver. The ’125 and
+//-    ’LS125A devices’ outputs are disabled when G is high.
+//-    The ’126 and ’LS126A devices’ outputs are disabled when G is low
+//-
+//- Pinalias: 1GQ,1A,1Y,2GQ,2A,2Y,GND,3Y,3A,3GQ,4Y,4A,4GQ,VCC
+//- Package: DIP
+//- Param: FORCE_TRISTATE_LOGIC
+//-    Set this parameter to 1 force tristate outputs into logic mode.
+//-    This should be done only if the device enable inputs are connected
+//-    in a way which always enables the device.
+//- NamingConvention: Naming conventions follow Texas instruments datasheet
+//- Limitations:
+//-    No limitations
+//-
+//- Example: 74125.cpp,74125_example
+//-
+//- FunctionTable:
+//-
+//-    | GQ  | A  | Y  |
+//-    |:---:|:--:|:--:|
+//-    |  L  |  L |  L |
+//-    |  L  |  H |  H |
+//-    |  H  |  X |  Z |
+//-
+
+static NETLIST_START(TTL_74125_DIP)
+
+	TTL_74125_GATE(A1)
+	TTL_74125_GATE(A2)
+	TTL_74125_GATE(A3)
+	TTL_74125_GATE(A4)
+
+	DEFPARAM(FORCE_TRISTATE_LOGIC, "$(@.A1.FORCE_TRISTATE_LOGIC")
+
+	PARAM(A1.FORCE_TRISTATE_LOGIC, "$(@.FORCE_TRISTATE_LOGIC)")
+	PARAM(A2.FORCE_TRISTATE_LOGIC, "$(@.FORCE_TRISTATE_LOGIC)")
+	PARAM(A3.FORCE_TRISTATE_LOGIC, "$(@.FORCE_TRISTATE_LOGIC)")
+	PARAM(A4.FORCE_TRISTATE_LOGIC, "$(@.FORCE_TRISTATE_LOGIC)")
+
+	ALIAS(1, A1.GQ)
+	ALIAS(2, A1.A)
+	ALIAS(3, A1.Y)
+	ALIAS(4, A2.GQ)
+	ALIAS(5, A2.A)
+	ALIAS(6, A2.Y)
+	ALIAS(7, A1.GND)
+
+	ALIAS(8, A3.Y)
+	ALIAS(9, A3.A)
+	ALIAS(10, A3.GQ)
+	ALIAS(11, A4.Y)
+	ALIAS(12, A4.A)
+	ALIAS(13, A4.GQ)
+	ALIAS(14, A1.VCC)
+
+	NET_C(A1.VCC, A2.VCC, A3.VCC, A4.VCC)
+	NET_C(A1.GND, A2.GND, A3.GND, A4.GND)
+NETLIST_END()
+
+static NETLIST_START(TTL_74126_DIP)
+
+	TTL_74126_GATE(A1)
+	TTL_74126_GATE(A2)
+	TTL_74126_GATE(A3)
+	TTL_74126_GATE(A4)
+
+	DEFPARAM(FORCE_TRISTATE_LOGIC, 0)
+	PARAM(A1.FORCE_TRISTATE_LOGIC, "$(@.FORCE_TRISTATE_LOGIC)")
+	PARAM(A2.FORCE_TRISTATE_LOGIC, "$(@.FORCE_TRISTATE_LOGIC)")
+	PARAM(A3.FORCE_TRISTATE_LOGIC, "$(@.FORCE_TRISTATE_LOGIC)")
+	PARAM(A4.FORCE_TRISTATE_LOGIC, "$(@.FORCE_TRISTATE_LOGIC)")
+
+	ALIAS(1, A1.G)
+	ALIAS(2, A1.A)
+	ALIAS(3, A1.Y)
+	ALIAS(4, A2.G)
+	ALIAS(5, A2.A)
+	ALIAS(6, A2.Y)
+	ALIAS(7, A1.GND)
+
+	ALIAS(8, A3.Y)
+	ALIAS(9, A3.A)
+	ALIAS(10, A3.G)
+	ALIAS(11, A4.Y)
+	ALIAS(12, A4.A)
+	ALIAS(13, A4.G)
+	ALIAS(14, A1.VCC)
+
+	NET_C(A1.VCC, A2.VCC, A3.VCC, A4.VCC)
+	NET_C(A1.GND, A2.GND, A3.GND, A4.GND)
+NETLIST_END()
 
 /*
  * DM74155/DM74156: Dual 2-Line to 4-Line Decoders/Demultiplexers
@@ -744,6 +1042,48 @@ static NETLIST_START(TTL_74156_DIP)
 NETLIST_END()
 
 /*
+ * DM74157: Quad 2-Input Multiplexor
+ *
+ *      +---+---+-------+---+
+ *      | E | S | I0 I1 | Z |
+ *      +===+===+=======+===+
+ *      | 1 | X |  X  X | 0 |
+ *      | 0 | 1 |  X  0 | 0 |
+ *      | 0 | 1 |  X  1 | 1 |
+ *      | 0 | 0 |  0  X | 0 |
+ *      | 0 | 0 |  1  X | 1 |
+ *      +---+---+-------+---+
+ *
+ * Naming conventions follow TI datasheet
+ *
+ */
+
+static NETLIST_START(TTL_74157_DIP)
+	NET_REGISTER_DEV(TTL_74157_GATE, A)
+	NET_REGISTER_DEV(TTL_74157_GATE, B)
+	NET_REGISTER_DEV(TTL_74157_GATE, C)
+	NET_REGISTER_DEV(TTL_74157_GATE, D)
+
+	NET_C(A.E, B.E, C.E, D.E)
+	NET_C(A.S, B.S, C.S, D.S)
+
+	NET_C(A.VCC, B.VCC, C.VCC, D.VCC)
+	NET_C(A.GND, B.GND, C.GND, D.GND)
+
+	DIPPINS(  /*       +--------------+      */
+		A.S,  /*     S |1     ++    16| VCC  */ A.VCC,
+		A.I,  /*   I0a |2           15| /E   */ A.E,
+		A.J,  /*   I1a |3           14| I0c  */ C.I,
+		A.O,  /*    Za |4   74157   13| I1c  */ C.J,
+		B.I,  /*   I0b |5           12| Zc   */ C.O,
+		B.J,  /*   I1b |6           11| I0d  */ D.I,
+		B.O,  /*    Zb |7           10| I1d  */ D.J,
+		A.GND,/*   GND |8            9| Zd   */ D.O
+			  /*       +--------------+      */
+	)
+NETLIST_END()
+
+/*
  *  DM74260: Dual 5-Input NOR Gates
  *                 _________
  *             Y = A+B+C+D+E
@@ -800,11 +1140,13 @@ NETLIST_END()
  *
  */
 
+#if !NL_AUTO_DEVICES
 #ifndef __PLIB_PREPROCESSOR__
 #define TTL_74279A(name)                                                         \
 		NET_REGISTER_DEV(TTL_74279A, name)
 #define TTL_74279B(name)                                                         \
 		NET_REGISTER_DEV(TTL_74279B, name)
+#endif
 #endif
 
 static NETLIST_START(TTL_74279_DIP)
@@ -826,6 +1168,102 @@ static NETLIST_START(TTL_74279_DIP)
 		B.Q,   /*  2Q |7           10| 3R  */ C.R,
 		A.GND, /* GND |8            9| 3Q  */ C.Q
 			   /*     +--------------+     */
+	)
+NETLIST_END()
+
+/*
+ *  DM74377: Octal D Flip-Flop With Enable
+ *  DM74378: Hex D Flip-Flop With Enable
+ *  DM74379: 4-bit D Flip-Flop With Enable
+ *
+ */
+
+static NETLIST_START(TTL_74377_DIP)
+	TTL_74377_GATE(A)
+	TTL_74377_GATE(B)
+	TTL_74377_GATE(C)
+	TTL_74377_GATE(D)
+	TTL_74377_GATE(E)
+	TTL_74377_GATE(F)
+	TTL_74377_GATE(G)
+	TTL_74377_GATE(H)
+
+	NET_C(A.VCC, B.VCC, C.VCC, D.VCC, E.VCC, F.VCC, G.VCC, H.VCC)
+	NET_C(A.GND, B.GND, C.GND, D.GND, E.GND, F.GND, G.GND, H.GND)
+	NET_C(A.CP, B.CP, C.CP, D.CP, E.CP, F.CP, G.CP, H.CP)
+	NET_C(A.E, B.E, C.E, D.E, E.E, F.E, G.E, H.E)
+
+	HINT(A.QQ, NC)
+	HINT(B.QQ, NC)
+	HINT(C.QQ, NC)
+	HINT(D.QQ, NC)
+	HINT(E.QQ, NC)
+	HINT(F.QQ, NC)
+	HINT(G.QQ, NC)
+	HINT(H.QQ, NC)
+
+	DIPPINS(  /*       +--------------+      */
+		A.E,  /*    /E |1     ++    20| VCC  */ A.VCC,
+		A.Q,  /*    Q0 |2           19| Q7   */ H.Q,
+		A.D,  /*    D0 |3           18| D7   */ H.D,
+		B.D,  /*    D1 |4   74377   17| D6   */ G.D,
+		B.Q,  /*    Q1 |5           16| Q6   */ G.Q,
+		C.Q,  /*    Q2 |6           15| Q5   */ F.Q,
+		C.D,  /*    D2 |7           14| D5   */ F.D,
+		D.D,  /*    D3 |8           13| D4   */ E.D,
+		D.Q,  /*    Q3 |9           12| Q4   */ E.Q,
+		A.GND,/*   GND |10          11| CP   */ A.CP
+			  /*       +--------------+      */
+	)
+NETLIST_END()
+
+static NETLIST_START(TTL_74378_DIP)
+	TTL_74377_GATE(A)
+	TTL_74377_GATE(B)
+	TTL_74377_GATE(C)
+	TTL_74377_GATE(D)
+	TTL_74377_GATE(E)
+	TTL_74377_GATE(F)
+
+	NET_C(A.VCC, B.VCC, C.VCC, D.VCC, E.VCC, F.VCC)
+	NET_C(A.GND, B.GND, C.GND, D.GND, E.GND, F.GND)
+	NET_C(A.CP, B.CP, C.CP, D.CP, E.CP, F.CP)
+	NET_C(A.E, B.E, C.E, D.E, E.E, F.E)
+
+	DIPPINS(  /*       +--------------+      */
+		A.E,  /*    /E |1     ++    16| VCC  */ A.VCC,
+		A.Q,  /*    Q0 |2           15| Q5   */ F.Q,
+		A.D,  /*    D0 |3           14| D5   */ F.D,
+		B.D,  /*    D1 |4   74378   13| D4   */ E.D,
+		B.Q,  /*    Q1 |5           12| Q4   */ E.Q,
+		C.D,  /*    D2 |6           11| D3   */ D.D,
+		C.Q,  /*    Q2 |7           10| Q3   */ D.Q,
+		A.GND,/*   GND |8            9| CP   */ A.CP
+			  /*       +--------------+      */
+	)
+NETLIST_END()
+
+static NETLIST_START(TTL_74379_DIP)
+	TTL_74377_GATE(A)
+	TTL_74377_GATE(B)
+	TTL_74377_GATE(C)
+	TTL_74377_GATE(D)
+
+	NET_C(A.VCC, B.VCC, C.VCC, D.VCC)
+	NET_C(A.GND, B.GND, C.GND, D.GND)
+	NET_C(A.CP, B.CP, C.CP, D.CP)
+	NET_C(A.E, B.E, C.E, D.E)
+
+	DIPPINS(  /*       +--------------+      */
+		A.E,  /*    /E |1     ++    16| VCC  */ A.VCC,
+		A.Q,  /*    Q0 |2           15| Q3   */ D.Q,
+		A.QQ, /*   /Q0 |3           14| /Q3  */ D.QQ,
+		A.D,  /*    D0 |4   74379   13| D3   */ D.D,
+		B.D,  /*    D1 |5           12| D2   */ C.D,
+		B.QQ, /*   /Q1 |6           11| /Q2  */ C.QQ,
+		B.Q,  /*    Q1 |7           10| Q2   */ C.Q,
+		A.GND,/*   GND |8            9| CP   */ A.CP
+			  /*       +--------------+      */
 	)
 NETLIST_END()
 
@@ -1062,6 +1500,26 @@ NETLIST_START(TTL74XX_lib)
 		TT_LINE("X,X,0,X|1|22")
 		TT_LINE("X,X,X,0|1|22")
 		TT_LINE("1,1,1,1|0|15")
+		TT_FAMILY("74XX")
+	TRUTHTABLE_END()
+
+	TRUTHTABLE_START(TTL_7421_GATE, 4, 1, "")
+		TT_HEAD("A,B,C,D|Q ")
+		TT_LINE("0,X,X,X|0|22")
+		TT_LINE("X,0,X,X|0|22")
+		TT_LINE("X,X,0,X|0|22")
+		TT_LINE("X,X,X,0|0|22")
+		TT_LINE("1,1,1,1|1|15")
+		TT_FAMILY("74XX")
+	TRUTHTABLE_END()
+
+	TRUTHTABLE_START(TTL_7421_AND, 4, 1, "+A,+B,+C,+D,@VCC,@GND")
+		TT_HEAD("A,B,C,D|Q ")
+		TT_LINE("0,X,X,X|0|22")
+		TT_LINE("X,0,X,X|0|22")
+		TT_LINE("X,X,0,X|0|22")
+		TT_LINE("X,X,X,0|0|22")
+		TT_LINE("1,1,1,1|1|15")
 		TT_FAMILY("74XX")
 	TRUTHTABLE_END()
 
@@ -1342,6 +1800,16 @@ NETLIST_START(TTL74XX_lib)
 		TT_FAMILY("74XXOC")
 	TRUTHTABLE_END()
 
+	TRUTHTABLE_START(TTL_74157_GATE, 4, 4, "")
+		TT_HEAD("E,S,I,J|O")
+		TT_LINE("1,X,X,X|0|14")
+		TT_LINE("0,1,X,0|0|14")
+		TT_LINE("0,1,X,1|1|14")
+		TT_LINE("0,0,0,X|0|14")
+		TT_LINE("0,0,1,X|1|14")
+		TT_FAMILY("74XX")
+	TRUTHTABLE_END()
+
 	TRUTHTABLE_START(TTL_74260_GATE, 5, 1, "")
 		TT_HEAD("A,B,C,D,E|Q ")
 		TT_LINE("0,0,0,0,0|1|10")
@@ -1419,6 +1887,7 @@ NETLIST_START(TTL74XX_lib)
 	LOCAL_LIB_ENTRY(TTL_74LS14_DIP)
 	LOCAL_LIB_ENTRY(TTL_7416_DIP)
 	LOCAL_LIB_ENTRY(TTL_7420_DIP)
+	LOCAL_LIB_ENTRY(TTL_7421_DIP)
 	LOCAL_LIB_ENTRY(TTL_7425_DIP)
 	LOCAL_LIB_ENTRY(TTL_7427_DIP)
 	LOCAL_LIB_ENTRY(TTL_7430_DIP)
@@ -1428,12 +1897,21 @@ NETLIST_START(TTL74XX_lib)
 	LOCAL_LIB_ENTRY(TTL_7448_DIP)
 #endif
 	LOCAL_LIB_ENTRY(TTL_7486_DIP)
+	LOCAL_LIB_ENTRY(TTL_74121_DIP)
+	LOCAL_LIB_ENTRY(TTL_74123_DIP)
+	LOCAL_LIB_ENTRY(TTL_9602_DIP)
+	LOCAL_LIB_ENTRY(TTL_74125_DIP)
+	LOCAL_LIB_ENTRY(TTL_74126_DIP)
 #if (NL_USE_TRUTHTABLE_74107)
 	LOCAL_LIB_ENTRY(TTL_74107_DIP)
 #endif
 	LOCAL_LIB_ENTRY(TTL_74155_DIP)
 	LOCAL_LIB_ENTRY(TTL_74156_DIP)
+	LOCAL_LIB_ENTRY(TTL_74157_DIP)
 	LOCAL_LIB_ENTRY(TTL_74260_DIP)
 	LOCAL_LIB_ENTRY(TTL_74279_DIP)
+	LOCAL_LIB_ENTRY(TTL_74377_DIP)
+	LOCAL_LIB_ENTRY(TTL_74378_DIP)
+	LOCAL_LIB_ENTRY(TTL_74379_DIP)
 	LOCAL_LIB_ENTRY(DM9312_DIP)
 NETLIST_END()

@@ -48,13 +48,13 @@ inline void zn_state::psxwriteword( uint32_t *p_n_psxram, uint32_t n_address, ui
 	*( (uint16_t *)( (uint8_t *)p_n_psxram + WORD_XOR_LE( n_address ) ) ) = n_data;
 }
 
-READ8_MEMBER(zn_state::znsecsel_r)
+uint8_t zn_state::znsecsel_r(offs_t offset, uint8_t mem_mask)
 {
 	verboselog(2, "znsecsel_r( %08x, %08x )\n", offset, mem_mask );
 	return m_n_znsecsel;
 }
 
-WRITE8_MEMBER(zn_state::znsecsel_w)
+void zn_state::znsecsel_w(offs_t offset, uint8_t data, uint8_t mem_mask)
 {
 	verboselog(2, "znsecsel_w( %08x, %08x, %08x )\n", offset, data, mem_mask );
 
@@ -66,7 +66,7 @@ WRITE8_MEMBER(zn_state::znsecsel_w)
 	m_n_znsecsel = data;
 }
 
-READ8_MEMBER(zn_state::boardconfig_r)
+uint8_t zn_state::boardconfig_r()
 {
 	/*
 	------00 mem=4M
@@ -112,13 +112,13 @@ READ8_MEMBER(zn_state::boardconfig_r)
 	return boardconfig;
 }
 
-READ16_MEMBER(zn_state::unknown_r)
+uint16_t zn_state::unknown_r(offs_t offset, uint16_t mem_mask)
 {
 	verboselog(0, "unknown_r( %08x, %08x )\n", offset, mem_mask );
 	return 0xffff;
 }
 
-WRITE8_MEMBER(zn_state::coin_w)
+void zn_state::coin_w(uint8_t data)
 {
 	/* 0x01=counter
 	   0x02=coin lock 1
@@ -363,19 +363,19 @@ Notes:
       Unpopulated sockets - 1.3B, 2.2E, 3.3E, 8.2K, 9.3K, 10.4K, 11.5K, 12.6K & 13.7K
 */
 
-READ16_MEMBER(capcom_zn_state::kickharness_r)
+uint16_t capcom_zn_state::kickharness_r(offs_t offset, uint16_t mem_mask)
 {
 	/* required for buttons 4,5&6 */
 	verboselog(2, "capcom_kickharness_r( %08x, %08x )\n", offset, mem_mask );
 	return 0xffff;
 }
 
-WRITE8_MEMBER(capcom_zn_state::bank_w)
+void capcom_zn_state::bank_w(uint8_t data)
 {
 	m_rombank->set_entry( data & 0x0f);
 }
 
-WRITE8_MEMBER(capcom_zn_state::qsound_bankswitch_w)
+void capcom_zn_state::qsound_bankswitch_w(uint8_t data)
 {
 	m_soundbank->set_entry( data & 0x0f );
 }
@@ -831,7 +831,7 @@ Notes:
       FM1208S        - RAMTRON 4096bit Nonvolatile Ferroelectric RAM (512w x 8b)
 */
 
-WRITE8_MEMBER(taito_fx_state::bank_w)
+void taito_fx_state::bank_w(offs_t offset, uint8_t data, uint8_t mem_mask)
 {
 	verboselog(1, "bank_w( %08x, %08x, %08x )\n", offset, data, mem_mask );
 
@@ -840,7 +840,7 @@ WRITE8_MEMBER(taito_fx_state::bank_w)
 	m_rombank->set_entry( data & 3 );
 }
 
-WRITE8_MEMBER(taito_fx1a_state::sound_bankswitch_w)
+void taito_fx1a_state::sound_bankswitch_w(uint8_t data)
 {
 	m_soundbank->set_entry( data & 0x07 );
 }
@@ -919,12 +919,12 @@ void taito_fx1a_state::coh1000ta(machine_config &config)
 	tc0140syt.set_slave_tag(m_audiocpu);
 }
 
-WRITE8_MEMBER(taito_fx1b_state::fram_w)
+void taito_fx1b_state::fram_w(offs_t offset, uint8_t data)
 {
 	m_fram[offset] = data;
 }
 
-READ8_MEMBER(taito_fx1b_state::fram_r)
+uint8_t taito_fx1b_state::fram_r(offs_t offset)
 {
 	return m_fram[offset];
 }
@@ -1127,13 +1127,13 @@ void primrag2_state::dma_write( uint32_t *p_n_psxram, uint32_t n_address, int32_
 	logerror("DMA write from %08x for %d bytes\n", n_address, n_size<<2);
 }
 
-READ16_MEMBER(primrag2_state::vt83c461_16_r)
+uint16_t primrag2_state::vt83c461_16_r(offs_t offset, uint16_t mem_mask)
 {
 	int shift = (16 * (offset & 1));
 
 	if( offset >= 0x30 / 2 && offset < 0x40 / 2 )
 	{
-		return m_vt83c461->read_config( ( offset / 2 ) & 3 ) >> shift;
+		return m_vt83c461->config_r( ( offset / 2 ) & 3 ) >> shift;
 	}
 	else if( offset >= 0x1f0 / 2 && offset < 0x1f8 / 2 )
 	{
@@ -1150,13 +1150,13 @@ READ16_MEMBER(primrag2_state::vt83c461_16_r)
 	}
 }
 
-WRITE16_MEMBER(primrag2_state::vt83c461_16_w)
+void primrag2_state::vt83c461_16_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 {
 	int shift = (16 * (offset & 1));
 
 	if( offset >= 0x30 / 2 && offset < 0x40 / 2 )
 	{
-		m_vt83c461->write_config( ( offset / 2 ) & 3, data << shift );
+		m_vt83c461->config_w( ( offset / 2 ) & 3, data << shift );
 	}
 	else if( offset >= 0x1f0 / 2 && offset < 0x1f8 / 2 )
 	{
@@ -1172,7 +1172,7 @@ WRITE16_MEMBER(primrag2_state::vt83c461_16_w)
 	}
 }
 
-READ16_MEMBER(primrag2_state::vt83c461_32_r)
+uint16_t primrag2_state::vt83c461_32_r(offs_t offset, uint16_t mem_mask)
 {
 	if( offset == 0x1f0/2 )
 	{
@@ -1191,7 +1191,7 @@ READ16_MEMBER(primrag2_state::vt83c461_32_r)
 	}
 }
 
-WRITE16_MEMBER(primrag2_state::vt83c461_32_w)
+void primrag2_state::vt83c461_32_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 {
 	logerror( "unhandled 32 bit write %04x %04x %04x\n", offset, data, mem_mask );
 }
@@ -1375,14 +1375,14 @@ Notes:
 
 */
 
-WRITE8_MEMBER(raizing_zn_state::bank_w)
+void raizing_zn_state::bank_w(offs_t offset, uint8_t data, uint8_t mem_mask)
 {
-	znsecsel_w( space, offset, data, mem_mask );
+	znsecsel_w( offset, data, mem_mask );
 
 	m_rombank->set_entry( data & 3 );
 }
 
-WRITE8_MEMBER(raizing_zn_state::sound_irq_w)
+void raizing_zn_state::sound_irq_w(uint8_t data)
 {
 	m_audiocpu->set_input_line(2, HOLD_LINE); // irq 2 on the 68k
 }
@@ -1530,7 +1530,7 @@ MTR-BAM* - DIP42 32MBit maskROMs
 */
 
 
-WRITE16_MEMBER(bam2_state::mcu_w)
+void bam2_state::mcu_w(offs_t offset, uint16_t data)
 {
 	switch( offset )
 	{
@@ -1545,7 +1545,7 @@ WRITE16_MEMBER(bam2_state::mcu_w)
 	}
 }
 
-READ16_MEMBER(bam2_state::mcu_r)
+uint16_t bam2_state::mcu_r(offs_t offset, uint16_t mem_mask)
 {
 	switch (offset)
 	{
@@ -1569,7 +1569,7 @@ READ16_MEMBER(bam2_state::mcu_r)
 	return 0;
 }
 
-READ16_MEMBER(bam2_state::unk_r)
+uint16_t bam2_state::unk_r()
 {
 	return 0;
 }
@@ -1808,12 +1808,12 @@ WRITE_LINE_MEMBER(jdredd_state::vblank)
 	}
 }
 
-WRITE16_MEMBER(acclaim_zn_state::acpsx_00_w)
+void acclaim_zn_state::acpsx_00_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 {
 	verboselog(0, "acpsx_00_w( %08x, %08x, %08x )\n", offset, data, mem_mask );
 }
 
-WRITE16_MEMBER(nbajamex_state::bank_w)
+void nbajamex_state::bank_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 {
 	verboselog(0, "bank_w( %08x, %08x, %08x )\n", offset, data, mem_mask );
 
@@ -1850,31 +1850,31 @@ WRITE16_MEMBER(nbajamex_state::bank_w)
 	}
 }
 
-WRITE16_MEMBER(acclaim_zn_state::acpsx_10_w)
+void acclaim_zn_state::acpsx_10_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 {
 	verboselog(0, "acpsx_10_w( %08x, %08x, %08x )\n", offset, data, mem_mask );
 }
 
 // all 16 bits goes to the external soundboard's latch (see sound test menu)
-WRITE16_MEMBER(nbajamex_state::sound_80_w)
+void nbajamex_state::sound_80_w(uint16_t data)
 {
 	m_rax->data_w(data);
 }
 
-READ16_MEMBER(nbajamex_state::sound_08_r)
+uint16_t nbajamex_state::sound_08_r(offs_t offset, uint16_t mem_mask)
 {
 	// Sound related
 	verboselog(0, "nbajamex_08_r( %08x, %08x, %08x )\n", offset, 0, mem_mask );
 	return 0x400;
 }
 
-READ16_MEMBER(nbajamex_state::sound_80_r)
+uint16_t nbajamex_state::sound_80_r(offs_t offset, uint16_t mem_mask)
 {
 	verboselog(0, "nbajamex_80_r( %08x, %08x, %08x )\n", offset, 0, mem_mask );
 	return 0xffff;
 }
 
-WRITE8_MEMBER(nbajamex_state::backup_w)
+void nbajamex_state::backup_w(offs_t offset, uint8_t data)
 {
 	m_sram[offset] = data;
 }
@@ -2097,13 +2097,13 @@ Notes:
       VSync        - 60Hz
 */
 
-WRITE16_MEMBER(atlus_zn_state::sound_unk_w)
+void atlus_zn_state::sound_unk_w(offs_t offset, uint16_t data, uint16_t mem_mask)
 {
 	// irq ack maybe?
 	logerror("coh1001l_sound_unk_w: %04x %04x\n", data, mem_mask);
 }
 
-WRITE8_MEMBER(atlus_zn_state::bank_w)
+void atlus_zn_state::bank_w(uint8_t data)
 {
 	m_rombank->set_entry( data & 3 );
 }
@@ -2168,7 +2168,7 @@ Key:    Mother    KN01
 
 */
 
-WRITE8_MEMBER(visco_zn_state::bank_w)
+void visco_zn_state::bank_w(uint8_t data)
 {
 	m_rombank->set_entry( data );
 }
@@ -2358,7 +2358,7 @@ Notes:
       for 11 more 32MBit smt SOP44 mask ROMs.
 */
 
-WRITE8_MEMBER(tecmo_zn_state::bank_w)
+void tecmo_zn_state::bank_w(offs_t offset, uint8_t data, uint8_t mem_mask)
 {
 	verboselog(1, "bank_w( %08x, %08x, %08x )\n", offset, data, mem_mask );
 	m_rombank->set_entry( data );
@@ -2409,7 +2409,7 @@ void tecmo_zn_state::coh1002ml(machine_config &config)
 	link.set_addrmap(AS_IO, &tecmo_zn_state::link_port_map);
 }
 
-READ8_MEMBER(cbaj_state::sound_main_status_r)
+uint8_t cbaj_state::sound_main_status_r()
 {
 	// d1: fifo empty flag, other bits: unused(?)
 	return m_fifo[1]->ef_r() << 1;
@@ -2423,7 +2423,7 @@ void cbaj_state::main_map(address_map &map)
 	map(0x1fb00003, 0x1fb00003).r(FUNC(cbaj_state::sound_main_status_r));
 }
 
-READ8_MEMBER(cbaj_state::sound_z80_status_r)
+uint8_t cbaj_state::sound_z80_status_r()
 {
 	// d1: fifo empty flag, other bits: unused
 	return m_fifo[0]->ef_r() << 1;
@@ -3998,6 +3998,23 @@ ROM_START( doapp )
 	ROM_LOAD( "mg05", 0x000000, 0x000008, CRC(5748a4ca) SHA1(c88d73f6a646a9ddefdfd84cba70d591759c069f) )
 ROM_END
 
+ROM_START( doappk )
+	TPS_BIOS
+
+	ROM_REGION32_LE( 0x02800000, "bankedroms", 0 )
+	ROM_LOAD16_BYTE( "doapp_u0119.119", 0x0000001, 0x100000, CRC(9084704e) SHA1(616b3e65a32768767209ae77c48ad34d11b31754) )
+	ROM_LOAD16_BYTE( "doapp_u0120.120", 0x0000000, 0x100000, CRC(720a6983) SHA1(d38783110440ffa00036b86f97bff5edb6a5673f) )
+	ROM_LOAD( "doapp-0.216",         0x0400000, 0x400000, CRC(acc6c539) SHA1(a744567a3d75634098b1749103307981be9acbdd) )
+	ROM_LOAD( "doapp-1.217",         0x0800000, 0x400000, CRC(14b961c4) SHA1(3fae1fcb4665ba8bad391881b26c2d087718d42f) )
+	ROM_LOAD( "doapp-2.218",         0x0c00000, 0x400000, CRC(134f698f) SHA1(6422972cf5d30a0f09f0c20f042691d5969207b4) )
+	ROM_LOAD( "doapp-3.219",         0x1000000, 0x400000, CRC(1c6540f3) SHA1(8631fde93a1da6325d7b31c7edf12c964f0ac4fc) )
+	ROM_LOAD( "doapp-4.220",         0x1400000, 0x400000, CRC(f83bacf7) SHA1(5bd66da993f0db966581dde80dd7e5b377754412) )
+	ROM_LOAD( "doapp-5.221",         0x1800000, 0x400000, CRC(e11e8b71) SHA1(b1d1b9532b5f074ce216a603436d5674d136865d) )
+
+	ROM_REGION( 0x8, "cat702_2", 0 )
+	ROM_LOAD( "mg05", 0x000000, 0x000008, CRC(5748a4ca) SHA1(c88d73f6a646a9ddefdfd84cba70d591759c069f) )
+ROM_END
+
 ROM_START( tondemo )
 	TPS_BIOS
 
@@ -5258,6 +5275,7 @@ GAME( 1997, glpracr2,  coh1002m, coh1002m,    zn,       tecmo_zn_state, empty_in
 GAME( 1997, glpracr2j, glpracr2, coh1002m,    zn,       tecmo_zn_state, empty_init, ROT0, "Tecmo",                  "Gallop Racer 2 (Japan)",             MACHINE_IMPERFECT_SOUND )
 GAME( 1997, glpracr2l, glpracr2, coh1002ml,   zn,       tecmo_zn_state, empty_init, ROT0, "Tecmo",                  "Gallop Racer 2 Link HW (Japan)",     MACHINE_IMPERFECT_SOUND )
 GAME( 1998, doapp,     coh1002m, coh1002m,    zn,       tecmo_zn_state, empty_init, ROT0, "Tecmo",                  "Dead Or Alive ++ (Japan)",           MACHINE_IMPERFECT_SOUND )
+GAME( 1998, doappk,    doapp,    coh1002m,    zn,       tecmo_zn_state, empty_init, ROT0, "Tecmo",                  "Dead Or Alive ++ (Korea)",           MACHINE_IMPERFECT_SOUND )
 GAME( 1998, cbaj,      coh1002m, cbaj,        zn,       cbaj_state,     empty_init, ROT0, "UEP Systems",            "Cool Boarders Arcade Jam",           MACHINE_IMPERFECT_SOUND )
 GAME( 1998, shngmtkb,  coh1002m, coh1002m,    zn,       tecmo_zn_state, empty_init, ROT0, "Sunsoft / Activision",   "Shanghai Matekibuyuu",               MACHINE_IMPERFECT_SOUND )
 GAME( 1999, tondemo,   coh1002m, coh1002m,    zn,       tecmo_zn_state, empty_init, ROT0, "Tecmo",                  "Tondemo Crisis (Japan)",             MACHINE_IMPERFECT_SOUND )

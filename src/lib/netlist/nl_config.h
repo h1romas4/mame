@@ -10,6 +10,8 @@
 #include "plib/pconfig.h"
 #include "plib/pexception.h"
 
+#include <type_traits>
+
 ///
 /// \brief Version - Major.
 ///
@@ -17,7 +19,7 @@
 ///
 /// \brief Version - Minor.
 ///
-#define NL_VERSION_MINOR           12
+#define NL_VERSION_MINOR           13
 /// \brief Version - Patch level.
 ///
 #define NL_VERSION_PATCHLEVEL      0
@@ -41,6 +43,17 @@
 #ifndef NL_USE_MEMPOOL
 #define NL_USE_MEMPOOL               (1)
 #endif
+
+/// brief default minimum alignment of mempool_arena
+///
+/// 256 is the best compromise between logic applications like MAME
+/// TTL games (e.g. pong) and analog applications like e.g. kidnikik sound.
+///
+/// Best performance for pong is achieved with a value of 16, but this degrades
+/// kidniki performance by ~10%.
+///
+/// More work is needed here.
+#define NL_MEMPOOL_ALIGN            (16)
 
 /// \brief  Enable queue statistics.
 ///
@@ -84,6 +97,20 @@
 #define NL_USE_COPY_INSTEAD_OF_REFERENCE (0)
 #endif
 
+/// \brief Use backward Euler integration
+///
+/// This will use backward Euler instead of trapezoidal integration.
+///
+/// FIXME: Longterm this will become a runtime setting. Only the capacitor model
+/// currently has a trapezoidal version and there is no support currently for
+/// variable capacitors.
+/// The change will have impact on timings since trapezoidal improves timing
+/// accuracy.
+
+#ifndef NL_USE_BACKWARD_EULER
+#define NL_USE_BACKWARD_EULER (1)
+#endif
+
 /// \brief  Use the truthtable implementation of 7448 instead of the coded device
 ///
 /// FIXME: Using truthtable is a lot slower than the explicit device
@@ -113,13 +140,22 @@
 #define NL_USE_FLOAT128 PUSE_FLOAT128
 #endif
 
+/// \brief Prefer 128bit int type for ptime if supported
+///
+/// Set this to one if you want to use 128 bit int for ptime.
+/// This is about 10% slower on a skylake processor for pongf.
+///
+#ifndef NL_PREFER_INT128
+#define NL_PREFER_INT128 (0)
+#endif
+
 /// \brief Support float type for matrix calculations.
 ///
 /// Defaults to NL_USE_ACADEMIC_SOLVERS to provide faster build times
 
 #ifndef NL_USE_FLOAT_MATRIX
-//#define NL_USE_FLOAT_MATRIX (NL_USE_ACADEMIC_SOLVERS)
-#define NL_USE_FLOAT_MATRIX 1
+#define NL_USE_FLOAT_MATRIX (NL_USE_ACADEMIC_SOLVERS)
+//#define NL_USE_FLOAT_MATRIX 1
 #endif
 
 /// \brief Support long double type for matrix calculations.
@@ -127,8 +163,8 @@
 /// Defaults to NL_USE_ACADEMIC_SOLVERS to provide faster build times
 
 #ifndef NL_USE_LONG_DOUBLE_MATRIX
-//#define NL_USE_LONG_DOUBLE_MATRIX (NL_USE_ACADEMIC_SOLVERS)
-#define NL_USE_LONG_DOUBLE_MATRIX 1
+#define NL_USE_LONG_DOUBLE_MATRIX (NL_USE_ACADEMIC_SOLVERS)
+//#define NL_USE_LONG_DOUBLE_MATRIX 1
 #endif
 
 //============================================================
@@ -147,55 +183,69 @@
 /// \}
 ///
 
-//============================================================
-// Time resolution
-//============================================================
-
-/// \brief Resolution as clocks per second for timing
-///
-/// Uses 100 pico second resolution. This is aligned to MAME's
-/// attotime resolution.
-///
-/// The table below shows the maximum run times depending on
-/// time type size and resolution.
-///
-///  | Bits |               Res |       Seconds |   Days | Years |
-///  | ====-|               ===-|       =======-|   ====-| =====-|
-///  |  63  |     1,000,000,000 | 9,223,372,037 | 106,752| 292.3 |
-///  |  63  |    10,000,000,000 |   922,337,204 |  10,675|  29.2 |
-///  |  63  |   100,000,000,000 |    92,233,720 |   1,068|   2.9 |
-///  |  63  | 1,000,000,000,000 |     9,223,372 |     107|   0.3 |
-///
-
-static constexpr const auto NETLIST_INTERNAL_RES = 10'000'000'000LL;
-
-/// \brief Recommended clock to be used
-///
-/// This is the recommended clock to be used in fixed clock applications limited
-/// to 32 bit clock resolution. The MAME code (netlist.cpp) contains code
-/// illustrating how to deal with remainders if \ref NETLIST_INTERNAL_RES is
-/// bigger than NETLIST_CLOCK.
-
-static constexpr const int NETLIST_CLOCK = 1'000'000'000;
-
-/// \brief  Floating point types used
-///
-/// nl_fptype is the floating point type used throughout the
-/// netlist core.
-///
-///  Don't change this! Simple analog circuits like pong
-///  work with float. Kidniki just doesn't work at all.
-///
-///  FIXME: More work needed. Review magic numbers.
-///
-///
-
-using nl_fptype = double;
-//using nl_fptype = long double;
-//using nl_fptype = float;
-
 namespace netlist
 {
+	// FIXME: need a better solution for global constants.
+	struct config
+	{
+		//============================================================
+		// Time resolution
+		//============================================================
+
+		/// \brief Resolution as clocks per second for timing
+		///
+		/// Uses 100 pico second resolution. This is aligned to MAME's
+		/// attotime resolution.
+		///
+		/// The table below shows the maximum run times depending on
+		/// time type size and resolution.
+		///
+		///  | Bits |               Res |       Seconds |   Days | Years |
+		///  | ====-|               ===-|       =======-|   ====-| =====-|
+		///  |  63  |     1,000,000,000 | 9,223,372,037 | 106,752| 292.3 |
+		///  |  63  |    10,000,000,000 |   922,337,204 |  10,675|  29.2 |
+		///  |  63  |   100,000,000,000 |    92,233,720 |   1,068|   2.9 |
+		///  |  63  | 1,000,000,000,000 |     9,223,372 |     107|   0.3 |
+		///
+		using INTERNAL_RES = std::integral_constant<long long int, 10'000'000'000LL>; // NOLINT
+
+		/// \brief Recommended clock to be used
+		///
+		/// This is the recommended clock to be used in fixed clock applications limited
+		/// to 32 bit clock resolution. The MAME code (netlist.cpp) contains code
+		/// illustrating how to deal with remainders if \ref NETLIST_INTERNAL_RES is
+		/// bigger than NETLIST_CLOCK.
+		using DEFAULT_CLOCK = std::integral_constant<int, 1'000'000'000>; // NOLINT
+
+		/// \brief Default logic family
+		///
+		static constexpr const char *DEFAULT_LOGIC_FAMILY() { return "74XX"; }
+
+		/// \brief Maximum queue size
+		///
+		using MAX_QUEUE_SIZE = std::integral_constant<std::size_t, 512>; // NOLINT
+
+		using use_float_matrix = std::integral_constant<bool, NL_USE_FLOAT_MATRIX>;
+		using use_long_double_matrix = std::integral_constant<bool, NL_USE_LONG_DOUBLE_MATRIX>;
+		using use_float128_matrix = std::integral_constant<bool, NL_USE_FLOAT128>;
+
+		using use_mempool = std::integral_constant<bool, NL_USE_MEMPOOL>;
+
+		/// \brief  Floating point types used
+		///
+		/// nl_fptype is the floating point type used throughout the
+		/// netlist core.
+		///
+		///  Don't change this! Simple analog circuits like pong
+		///  work with float. Kidniki just doesn't work at all.
+		///
+		///  FIXME: More work needed. Review magic numbers.
+		///
+		using fptype = double;
+	};
+
+	using nl_fptype = config::fptype;
+
 	/// \brief  Specific constants depending on floating type
 	///
 	/// \tparam FT floating point type: double/float

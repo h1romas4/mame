@@ -20,7 +20,6 @@
 #define MPU4_MASTER_CLOCK           XTAL(6'880'000)
 #define VIDEO_MASTER_CLOCK          XTAL(10'000'000)
 
-
 #ifdef MAME_DEBUG
 #define MPU4VIDVERBOSE 1
 #else
@@ -61,7 +60,7 @@ static const uint8_t bwb_chr_table_common[10]= {0x00,0x04,0x04,0x0c,0x0c,0x1c,0x
 #define SIX_REEL_1TO8  4    // Two reels on the meter drives
 #define SIX_REEL_5TO8  5    // Like FIVE_REEL_5TO8, but with an extra reel elsewhere
 #define SEVEN_REEL     6    // Mainly club machines, significant reworking of reel hardware
-#define FLUTTERBOX     7    // Will you start the fans, please!  A fan using a reel mux-like setup, but not actually a reel
+#define FLUTTERBOX     7    // A fan feature using a reel mux-like setup, but not actually a reel
 
 //Lamp extension
 #define NO_EXTENDER         0 // As originally designed
@@ -74,6 +73,8 @@ static const uint8_t bwb_chr_table_common[10]= {0x00,0x04,0x04,0x0c,0x0c,0x1c,0x
 #define CARD_A          1
 #define CARD_B          2
 #define CARD_C          3
+#define SIMPLE_CARD     4
+
 
 //Hopper info
 #define TUBES               0
@@ -160,6 +161,7 @@ public:
 	void init_m4_led_a();
 	void init_m4_led_b();
 	void init_m4_led_c();
+	void init_m4_led_simple();
 	void init_m4_andycp10c();
 	void init_m_blsbys();
 	void init_m_oldtmr();
@@ -233,7 +235,7 @@ protected:
 	void mpu4_memmap(address_map &map);
 	void lamp_extend_small(int data);
 	void lamp_extend_large(int data,int column,int active);
-	void led_write_latch(int latch, int data, int column);
+	void led_write_extender(int latch, int data, int column);
 	void update_meters();
 	void ic23_update();
 	void ic24_output(int data);
@@ -259,53 +261,53 @@ protected:
 		return 0;
 	}
 
-	DECLARE_WRITE8_MEMBER(bankswitch_w);
-	DECLARE_READ8_MEMBER(bankswitch_r);
-	DECLARE_WRITE8_MEMBER(bankset_w);
-	DECLARE_WRITE8_MEMBER(characteriser_w);
-	DECLARE_READ8_MEMBER(characteriser_r);
-	DECLARE_WRITE8_MEMBER(bwb_characteriser_w);
-	DECLARE_READ8_MEMBER(bwb_characteriser_r);
-	DECLARE_WRITE8_MEMBER(mpu4_ym2413_w);
-	DECLARE_READ8_MEMBER(mpu4_ym2413_r);
-	DECLARE_READ8_MEMBER(crystal_sound_r);
-	DECLARE_WRITE8_MEMBER(crystal_sound_w);
-	DECLARE_WRITE8_MEMBER(ic3ss_w);
+	void bankswitch_w(uint8_t data);
+	uint8_t bankswitch_r();
+	void bankset_w(uint8_t data);
+	void characteriser_w(offs_t offset, uint8_t data);
+	uint8_t characteriser_r(address_space &space, offs_t offset);
+	void bwb_characteriser_w(offs_t offset, uint8_t data);
+	uint8_t bwb_characteriser_r(offs_t offset);
+	void mpu4_ym2413_w(offs_t offset, uint8_t data);
+	uint8_t mpu4_ym2413_r(offs_t offset);
+	uint8_t crystal_sound_r();
+	void crystal_sound_w(uint8_t data);
+	void ic3ss_w(offs_t offset, uint8_t data);
 	DECLARE_WRITE_LINE_MEMBER(cpu0_irq);
 	DECLARE_WRITE_LINE_MEMBER(ic2_o1_callback);
 	DECLARE_WRITE_LINE_MEMBER(ic2_o2_callback);
 	DECLARE_WRITE_LINE_MEMBER(ic2_o3_callback);
-	DECLARE_WRITE8_MEMBER(pia_ic3_porta_w);
-	DECLARE_WRITE8_MEMBER(pia_ic3_portb_w);
+	void pia_ic3_porta_w(uint8_t data);
+	void pia_ic3_portb_w(uint8_t data);
 	DECLARE_WRITE_LINE_MEMBER(pia_ic3_ca2_w);
 	DECLARE_WRITE_LINE_MEMBER(pia_ic3_cb2_w);
-	DECLARE_WRITE8_MEMBER(pia_ic4_porta_w);
-	DECLARE_WRITE8_MEMBER(pia_ic4_portb_w);
-	DECLARE_READ8_MEMBER(pia_ic4_portb_r);
+	void pia_ic4_porta_w(uint8_t data);
+	void pia_ic4_portb_w(uint8_t data);
+	uint8_t pia_ic4_portb_r();
 	DECLARE_WRITE_LINE_MEMBER(pia_ic4_ca2_w);
 	DECLARE_WRITE_LINE_MEMBER(pia_ic4_cb2_w);
-	DECLARE_READ8_MEMBER(pia_ic5_porta_r);
-	DECLARE_WRITE8_MEMBER(pia_ic5_porta_w);
-	DECLARE_WRITE8_MEMBER(pia_ic5_portb_w);
-	DECLARE_READ8_MEMBER(pia_ic5_portb_r);
+	uint8_t pia_ic5_porta_r();
+	void pia_ic5_porta_w(uint8_t data);
+	void pia_ic5_portb_w(uint8_t data);
+	uint8_t pia_ic5_portb_r();
 	DECLARE_WRITE_LINE_MEMBER(pia_ic5_ca2_w);
 	DECLARE_WRITE_LINE_MEMBER(pia_ic5_cb2_w);
-	DECLARE_WRITE8_MEMBER(pia_ic6_portb_w);
-	DECLARE_WRITE8_MEMBER(pia_ic6_porta_w);
+	void pia_ic6_portb_w(uint8_t data);
+	void pia_ic6_porta_w(uint8_t data);
 	DECLARE_WRITE_LINE_MEMBER(pia_ic6_ca2_w);
 	DECLARE_WRITE_LINE_MEMBER(pia_ic6_cb2_w);
-	DECLARE_WRITE8_MEMBER(pia_ic7_porta_w);
-	DECLARE_WRITE8_MEMBER(pia_ic7_portb_w);
-	DECLARE_READ8_MEMBER(pia_ic7_portb_r);
+	void pia_ic7_porta_w(uint8_t data);
+	void pia_ic7_portb_w(uint8_t data);
+	uint8_t pia_ic7_portb_r();
 	DECLARE_WRITE_LINE_MEMBER(pia_ic7_ca2_w);
 	DECLARE_WRITE_LINE_MEMBER(pia_ic7_cb2_w);
-	DECLARE_READ8_MEMBER(pia_ic8_porta_r);
-	DECLARE_WRITE8_MEMBER(pia_ic8_portb_w);
+	uint8_t pia_ic8_porta_r();
+	void pia_ic8_portb_w(uint8_t data);
 	DECLARE_WRITE_LINE_MEMBER(pia_ic8_ca2_w);
 	DECLARE_WRITE_LINE_MEMBER(pia_ic8_cb2_w);
-	DECLARE_WRITE8_MEMBER(pia_gb_porta_w);
-	DECLARE_WRITE8_MEMBER(pia_gb_portb_w);
-	DECLARE_READ8_MEMBER(pia_gb_portb_r);
+	void pia_gb_porta_w(uint8_t data);
+	void pia_gb_portb_w(uint8_t data);
+	uint8_t pia_gb_portb_r();
 	DECLARE_WRITE_LINE_MEMBER(pia_gb_ca2_w);
 	DECLARE_WRITE_LINE_MEMBER(pia_gb_cb2_w);
 

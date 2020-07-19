@@ -14,11 +14,9 @@
 #include "netlist/solver/nld_solver.h"
 
 
-#define xstr(s) # s
-
 #define NETLIB_DEVICE_DECL(chip) extern factory::constructor_ptr_t decl_ ## chip
-#define LIB_DECL(nic, decl) factory.register_device( decl ( xstr(nic)) );
-#define LIB_ENTRY(nic) { NETLIB_DEVICE_DECL(nic); LIB_DECL(NETLIB_NAME(nic), decl_ ## nic) }
+#define LIB_DECL(decl) factory.add( decl () );
+#define LIB_ENTRY(nic) { NETLIB_DEVICE_DECL(nic); LIB_DECL(decl_ ## nic) }
 
 namespace netlist
 {
@@ -64,6 +62,8 @@ namespace devices
 		LIB_ENTRY(sys_dsw1)
 		LIB_ENTRY(sys_dsw2)
 		LIB_ENTRY(sys_compd)
+		LIB_ENTRY(sys_noise_mt_u)
+		LIB_ENTRY(sys_noise_mt_n)
 		LIB_ENTRY(switch1)
 		LIB_ENTRY(switch2)
 		LIB_ENTRY(nicRSFF)
@@ -71,7 +71,6 @@ namespace devices
 		LIB_ENTRY(2102A)
 		LIB_ENTRY(2102A_dip)
 		LIB_ENTRY(2716)
-		LIB_ENTRY(2716_dip)
 #if !(NL_USE_TRUTHTABLE_7448)
 		LIB_ENTRY(7448)
 		LIB_ENTRY(7448_dip)
@@ -107,11 +106,18 @@ namespace devices
 		LIB_ENTRY(74107_dip)
 #endif
 		LIB_ENTRY(74107A)    // FIXME: implement missing DIP
+		LIB_ENTRY(74113)
+		LIB_ENTRY(74113_dip)
+		LIB_ENTRY(74113A)
+		LIB_ENTRY(74113A_dip)
+		LIB_ENTRY(74121)
 		LIB_ENTRY(74123)
-		LIB_ENTRY(74123_dip)
+		LIB_ENTRY(74125)
+		LIB_ENTRY(74126)
 		LIB_ENTRY(74153)
 		LIB_ENTRY(74153_dip)
 		LIB_ENTRY(74161)
+		LIB_ENTRY(74161_fixme)
 		LIB_ENTRY(74161_dip)
 		LIB_ENTRY(74163)
 		LIB_ENTRY(74163_dip)
@@ -127,6 +133,7 @@ namespace devices
 		LIB_ENTRY(74193)
 		LIB_ENTRY(74194)
 		LIB_ENTRY(74365)
+		LIB_ENTRY(74377_GATE)
 		LIB_ENTRY(74393)
 		LIB_ENTRY(74393_dip)
 		//ENTRY(74279,              TTL_74279,              "") // only dip available
@@ -135,6 +142,7 @@ namespace devices
 		LIB_ENTRY(82S115)
 		LIB_ENTRY(82S123)
 		LIB_ENTRY(82S126)
+		LIB_ENTRY(74S287)
 		LIB_ENTRY(9310)
 		LIB_ENTRY(9314)
 		LIB_ENTRY(9316)
@@ -148,7 +156,7 @@ namespace devices
 		LIB_ENTRY(CD4020)
 		LIB_ENTRY(CD4066_GATE)
 		LIB_ENTRY(CD4316_GATE)
-		LIB_ENTRY(4538_dip)
+		LIB_ENTRY(4538)
 		LIB_ENTRY(schmitt_trigger)
 		// entries with suffix WI are legacy only
 		//ENTRY(4066,                 CD_4066,              "+A,B")
@@ -169,9 +177,7 @@ namespace devices
 		LIB_ENTRY(74365_dip)
 		LIB_ENTRY(82S16_dip)
 		LIB_ENTRY(82S115_dip)
-		LIB_ENTRY(82S123_dip)
-		LIB_ENTRY(82S126_dip)
-		LIB_ENTRY(9602_dip)
+		LIB_ENTRY(9602)
 		LIB_ENTRY(9310_dip)
 		LIB_ENTRY(9314_dip)
 		LIB_ENTRY(9316_dip)

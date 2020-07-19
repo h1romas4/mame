@@ -42,7 +42,7 @@ protected:
 	virtual ioport_constructor device_input_ports() const override;
 	virtual const tiny_rom_entry *device_rom_region() const override;
 
-	virtual void pre_opcode_fetch(offs_t offset) override;
+	virtual void post_opcode_fetch(offs_t offset) override;
 	virtual uint8_t mreq_r(offs_t offset) override;
 	virtual void mreq_w(offs_t offset, uint8_t data) override;
 	virtual uint8_t iorq_r(offs_t offset) override;
@@ -50,8 +50,8 @@ protected:
 	virtual DECLARE_READ_LINE_MEMBER(romcs) override;
 
 private:
-	DECLARE_WRITE8_MEMBER(pia_out_a);
-	DECLARE_WRITE8_MEMBER(pia_out_b);
+	void pia_out_a(uint8_t data);
+	void pia_out_b(uint8_t data);
 	DECLARE_WRITE_LINE_MEMBER(busy_w);
 
 	required_ioport m_joy;
@@ -65,7 +65,6 @@ private:
 
 	int m_romcs;
 	uint8_t m_ram[4 * 1024];
-	offs_t m_last_pc;
 };
 
 

@@ -50,9 +50,13 @@ Known Games on this Platform
 
 (add more)
 
-ToDo:
+TODO:
 
- IRQ4 generation - Puzzli 2 doesn't like this, many other games require it for coins / inputs to work.
+- IRQ4 generation - Puzzli 2 doesn't like this, many other games require it for coins / inputs to work.
+- Verify/Implement unemulated vreg usage (b04000, b0e000)
+  b04000 is 210h or 610h, bit 10 unknown
+  b0e000 bit 2/0 related to VRAM access / DMA / or others?
+- Zooming function is not fully verified; sprite zoom table is bit different in drgw2
 
 
 Protection Devices / Co-processors
@@ -4991,10 +4995,10 @@ GAME( 2002, ketbl,        ket,       pgm_arm_type2,          pgm,       pgm_arm_
 
 // these are modern hacks, some of them have been seen on original PCBs, also reportedly on a bootleg PCB with mostly original components but the ARM replaced with a custom chip.
 // this is a significantly reworked version of the game
-GAME( 2014, ketarr,       ket,       pgm_arm_type1_cave,     ddp3,      pgm_arm_type1_state, init_ket,      ROT270, "hack (trap15)", "Ketsui: Kizuna Jigoku Tachi (2014/07/16 ARRANGE 1.7 VER) (hack)", MACHINE_SUPPORTS_SAVE )
-GAME( 2012, ketarr151,    ket,       pgm_arm_type1_cave,     ddp3,      pgm_arm_type1_state, init_ket,      ROT270, "hack (trap15)", "Ketsui: Kizuna Jigoku Tachi (2012/06/26 ARRANGE 1.51 VER) (hack)", MACHINE_SUPPORTS_SAVE ) // this apparently crashes on an original PGM PCB when displaying the text after starting a game, find out why and reproduce the issue in MAME.
-GAME( 2012, ketarr15,     ket,       pgm_arm_type1_cave,     ddp3,      pgm_arm_type1_state, init_ket,      ROT270, "hack (trap15)", "Ketsui: Kizuna Jigoku Tachi (2012/06/26 ARRANGE 1.5 VER) (hack)", MACHINE_SUPPORTS_SAVE )
-GAME( 2012, ketarr10,     ket,       pgm_arm_type1_cave,     ddp3,      pgm_arm_type1_state, init_ket,      ROT270, "hack (trap15)", "Ketsui: Kizuna Jigoku Tachi (2012/04/17 ARRANGE VER) (hack)", MACHINE_SUPPORTS_SAVE )
+GAME( 2014, ketarr,       ket,       pgm_arm_type1_cave,     espgal,    pgm_arm_type1_state, init_ket,      ROT270, "hack (trap15)", "Ketsui: Kizuna Jigoku Tachi (2014/07/16 ARRANGE 1.7 VER) (hack)", MACHINE_SUPPORTS_SAVE )
+GAME( 2012, ketarr151,    ket,       pgm_arm_type1_cave,     espgal,    pgm_arm_type1_state, init_ket,      ROT270, "hack (trap15)", "Ketsui: Kizuna Jigoku Tachi (2012/06/26 ARRANGE 1.51 VER) (hack)", MACHINE_SUPPORTS_SAVE ) // this apparently crashes on an original PGM PCB when displaying the text after starting a game, find out why and reproduce the issue in MAME.
+GAME( 2012, ketarr15,     ket,       pgm_arm_type1_cave,     espgal,    pgm_arm_type1_state, init_ket,      ROT270, "hack (trap15)", "Ketsui: Kizuna Jigoku Tachi (2012/06/26 ARRANGE 1.5 VER) (hack)", MACHINE_SUPPORTS_SAVE )
+GAME( 2012, ketarr10,     ket,       pgm_arm_type1_cave,     espgal,    pgm_arm_type1_state, init_ket,      ROT270, "hack (trap15)", "Ketsui: Kizuna Jigoku Tachi (2012/04/17 ARRANGE VER) (hack)", MACHINE_SUPPORTS_SAVE )
 
 // these simplify the scoring system
 GAME( 2012, ketarrs151,   ket,       pgm_arm_type1_cave,     ddp3,      pgm_arm_type1_state, init_ket,      ROT270, "hack (trap15)", "Ketsui: Kizuna Jigoku Tachi (2012/06/27 MR.STOIC 1.51 VER) (hack)", MACHINE_SUPPORTS_SAVE )
@@ -5045,6 +5049,12 @@ GAME( 2004, happy6,       pgm,       pgm_arm_type3_24m,      happy6,    pgm_arm_
 GAME( 2004, happy6101,    happy6,    pgm_arm_type3_24m,      happy6,    pgm_arm_type3_state,  init_happy6,  ROT0,   "IGS", "Huanle Liuhe Yi (Happy 6-in-1) (M68K ver. V100, ARM ver. V101CN)",   MACHINE_IMPERFECT_SOUND | MACHINE_SUPPORTS_SAVE )
 GAME( 2004, happy6100hk,  happy6,    pgm_arm_type3_24m,      happy6hk,  pgm_arm_type3_state,  init_happy6,  ROT0,   "IGS", "Huanle Liuhe Yi (Happy 6-in-1) (M68K ver. V100HK, ARM ver. V100HK)", MACHINE_IMPERFECT_SOUND | MACHINE_SUPPORTS_SAVE )
 
+//超級比一比2/Chāojí bǐ yī bǐ 2 (Taiwan)
+//大家来找碴2/Dàjiā lái zhǎo chá 2/Daai6gaa1 Loi4 Zaau2 Caa4 2 (China, Hong Kong)
+//リアルアンドフェイク 2 Photo Y2K/Riaruandofeiku(Real and Fake) 2 Photo Y2K (Japan)
+GAME( 2001, py2k2,        pgm,       pgm_arm_type1_sim,      py2k2,     pgm_arm_type1_state,  init_py2k2,    ROT0,   "IGS", "Photo Y2K 2 / Chaoji Bi Yi Bi 2 / Dajia Lai Zhao Cha 2 / Real and Fake 2 Photo Y2K (M101XX 05/25/01 11:02:54)", MACHINE_IMPERFECT_SOUND | MACHINE_SUPPORTS_SAVE )  /* need internal rom of IGS027A */
+GAME( 2000, py2k2100,     py2k2,     pgm_arm_type1_sim,      py2k2,     pgm_arm_type1_state,  init_py2k2,    ROT0,   "IGS", "Photo Y2K 2 / Chaoji Bi Yi Bi 2 / Dajia Lai Zhao Cha 2 / Real and Fake 2 Photo Y2K (ver. 100, Japanese Board)", MACHINE_IMPERFECT_SOUND | MACHINE_SUPPORTS_SAVE )  /* need internal rom of IGS027A */
+
 /* -----------------------------------------------------------------------------------------------------------------------
    Partially Working, playable, but some imperfections
    -----------------------------------------------------------------------------------------------------------------------*/
@@ -5082,12 +5092,6 @@ GAME( 1999, kovsgqyzb,    kovplus,   pgm_arm_type1_sim,      sango_ch,  pgm_arm_
 
 //魔幻星座/Móhuàn xīngzuò
 GAME( 1999, puzlstar,     pgm,       pgm_arm_type1_sim,      pstar,     pgm_arm_type1_state,  init_pstar,    ROT0,   "IGS (Metro license)", "Puzzle Star / Mohuan Xingzuo (ver. 100MG)", MACHINE_IMPERFECT_SOUND | MACHINE_UNEMULATED_PROTECTION | MACHINE_NOT_WORKING | MACHINE_SUPPORTS_SAVE ) /* need internal rom of IGS027A */
-
-//超級比一比2/Chāojí bǐ yī bǐ 2 (Taiwan)
-//大家来找碴2/Dàjiā lái zhǎo chá 2/Daai6gaa1 Loi4 Zaau2 Caa4 2 (China, Hong Kong)
-//リアルアンドフェイク 2 Photo Y2K/Riaruandofeiku(Real and Fake) 2 Photo Y2K (Japan)
-GAME( 2001, py2k2,        pgm,       pgm_arm_type1_sim,      py2k2,     pgm_arm_type1_state,  init_py2k2,    ROT0,   "IGS", "Photo Y2K 2 / Chaoji Bi Yi Bi 2 / Dajia Lai Zhao Cha 2 / Real and Fake 2 Photo Y2K (M101XX 05/25/01 11:02:54)", MACHINE_NOT_WORKING )  /* need internal rom of IGS027A */
-GAME( 2000, py2k2100,     py2k2,     pgm_arm_type1_sim,      py2k2,     pgm_arm_type1_state,  init_py2k2,    ROT0,   "IGS", "Photo Y2K 2 / Chaoji Bi Yi Bi 2 / Dajia Lai Zhao Cha 2 / Real and Fake 2 Photo Y2K (ver. 100, Japanese Board)", MACHINE_NOT_WORKING )  /* need internal rom of IGS027A */
 
 //閃亮三合一/Shǎn liàng sān hé yī (Taiwan, Hong Kong, Oversea)
 //闪亮三合一/Shǎn liàng sān hé yī (China)

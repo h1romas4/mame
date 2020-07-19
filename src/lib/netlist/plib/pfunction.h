@@ -9,9 +9,7 @@
 ///
 
 #include "pmath.h"
-#include "pstate.h"
 #include "pstring.h"
-#include "putil.h"
 
 #include <vector>
 
@@ -21,6 +19,36 @@ namespace plib {
 	//  function evaluation
 	//============================================================
 
+	enum rpn_cmd
+	{
+		ADD,
+		MULT,
+		SUB,
+		DIV,
+		EQ,
+		NE,
+		LT,
+		GT,
+		LE,
+		GE,
+		IF,
+		NEG,	// unary minus
+		POW,
+		LOG,
+		SIN,
+		COS,
+		MIN,
+		MAX,
+		RAND, /// random number between 0 and 1
+		TRUNC,
+
+		PUSH_CONST,
+		PUSH_INPUT,
+
+		LP, // Left parenthesis - for infix parsing
+		RP  // right parenthesis - for infix parsing
+	};
+
 	/// \brief Class providing support for evaluating expressions
 	///
 	///  \tparam NT Number type, should be float or double
@@ -28,27 +56,18 @@ namespace plib {
 	template <typename NT>
 	class pfunction
 	{
-		enum rpn_cmd
-		{
-			ADD,
-			MULT,
-			SUB,
-			DIV,
-			POW,
-			SIN,
-			COS,
-			MIN,
-			MAX,
-			RAND, /// random number between 0 and 1
-			TRUNC,
-			PUSH_CONST,
-			PUSH_INPUT
-		};
 		struct rpn_inst
 		{
-			rpn_inst() : m_cmd(ADD), m_param(plib::constants<NT>::zero()) { }
+			rpn_inst() : m_cmd(ADD)
+			{
+				m_param.val = plib::constants<NT>::zero();
+			}
 			rpn_cmd m_cmd;
-			NT m_param;
+			union
+			{
+				NT          val;
+				std::size_t index;
+			} m_param;
 		};
 	public:
 
@@ -57,24 +76,29 @@ namespace plib {
 		using inputs_container = std::vector<pstring>;
 		using values_container = std::vector<value_type>;
 
-		/// \brief Constructor with state saving support
-		///
-		/// \param name Name of this object
-		/// \param owner Owner of this object
-		/// \param state_manager State manager to handle saving object state
-		///
-		///
-		pfunction(const pstring &name, const void *owner, state_manager_t &state_manager)
-		: m_lfsr(0xace1U) // NOLINT
-		{
-			state_manager.save_item(owner, m_lfsr, name + ".lfsr");
-		}
-
-		/// \brief Constructor without state saving support
+		/// \brief Constructor
 		///
 		pfunction()
 		: m_lfsr(0xace1U) // NOLINT
 		{
+		}
+
+		/// \brief Constructor with compile
+		///
+		pfunction(const pstring &expr, const inputs_container &inputs = inputs_container())
+		: m_lfsr(0xace1U) // NOLINT
+		{
+			compile(expr, inputs);
+		}
+
+		/// \brief Evaluate the expression
+		///
+		/// \param values for input variables, e.g. {1.1, 2.2}
+		/// \return value of expression
+		///
+		value_type operator()(const values_container &values = values_container()) noexcept
+		{
+			return evaluate(values);
 		}
 
 		/// \brief Compile an expression
@@ -83,21 +107,21 @@ namespace plib {
 		///          to be prefixed with rpn, e.g. "rpn:A B + 1.3 /"
 		/// \param inputs Vector of input variables, e.g. {"A","B"}
 		///
-		void compile(const pstring &expr, const inputs_container &inputs) noexcept(false);
+		void compile(const pstring &expr, const inputs_container &inputs = inputs_container()) noexcept(false);
 
 		/// \brief Compile a rpn expression
 		///
 		/// \param expr Reverse polish notation expression, e.g. "A B + 1.3 /"
 		/// \param inputs Vector of input variables, e.g. {"A","B"}
 		///
-		void compile_postfix(const pstring &expr, const inputs_container &inputs) noexcept(false);
+		void compile_postfix(const pstring &expr, const inputs_container &inputs = inputs_container()) noexcept(false);
 
 		/// \brief Compile an infix expression
 		///
 		/// \param expr Infix expression, e.g. "(A+B)/1.3"
 		/// \param inputs Vector of input variables, e.g. {"A","B"}
 		///
-		void compile_infix(const pstring &expr, const inputs_container &inputs) noexcept(false);
+		void compile_infix(const pstring &expr, const inputs_container &inputs = inputs_container()) noexcept(false);
 
 		/// \brief Evaluate the expression
 		///
@@ -105,6 +129,12 @@ namespace plib {
 		/// \return value of expression
 		///
 		value_type evaluate(const values_container &values = values_container()) noexcept;
+
+		template <typename ST>
+		void save_state(ST &st)
+		{
+			st.save_item(m_lfsr, "m_lfsr");
+		}
 
 	private:
 
