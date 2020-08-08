@@ -53,7 +53,7 @@ TIDY_SOURCES = $(SOURCES)
 
 #TIDY_SOURCES = $(SRC)/devices/nld_7442.cpp $(SRC)/devices/nld_7492.cpp
 
-#TIDY_FLAGS = -p $(OBJ) -checks=llvm-include-order,llvm-namespace-comment,modernize-use-override,modernize-use-using -fix
+TIDY_FLAGS = -p $(OBJ) -checks=llvm-include-order,llvm-namespace-comment,modernize-use-override,modernize-use-using -fix
 #TIDY_FLAGS = -checks=llvm-include-order -fix
 #TIDY_FLAGS = -checks=llvm-namespace-comment -fix
 #TIDY_FLAGS = -checks=modernize-use-override -fix
@@ -92,7 +92,7 @@ DEPENDCC=$(CC)
 
 
 ifndef FAST
-FAST=1
+FAST=0
 endif
 
 ifeq ($(FAST),1)
@@ -154,10 +154,11 @@ NLOBJS := \
 	$(NLOBJ)/devices/nld_tms4800.o \
 	$(NLOBJ)/devices/nld_4006.o \
 	$(NLOBJ)/devices/nld_4013.o \
+	$(NLOBJ)/devices/nld_4017.o \
 	$(NLOBJ)/devices/nld_4020.o \
+	$(NLOBJ)/devices/nld_4053.o \
 	$(NLOBJ)/devices/nld_4066.o \
 	$(NLOBJ)/devices/nld_4316.o \
-	$(NLOBJ)/devices/nld_7442.o \
 	$(NLOBJ)/devices/nld_7448.o \
 	$(NLOBJ)/devices/nld_7450.o \
 	$(NLOBJ)/devices/nld_7473.o \
@@ -250,7 +251,7 @@ MAKEFILE_TARGETS_WITHOUT_INCLUDE := gcc9 clang clang-5 mingw doc native maketree
 # PHONY
 #-------------------------------------------------
 
-.PHONY: all gcc9 clang clang-5 mingw doc native maketree $(DEPEND) depend runtests
+.PHONY: all gcc9 clang clang-5 mingw doc man native maketree $(DEPEND) depend runtests
 
 #-------------------------------------------------
 # all
@@ -307,11 +308,11 @@ clang:
 		-Wmissing-variable-declarations -Wno-float-equal -Wconversion \
 		-Wno-c++98-compat -Wno-c++98-compat-pedantic -Wformat-nonliteral \
 		-Wno-exit-time-destructors -Winconsistent-missing-destructor-override \
-		-Wno-return-std-move-in-c++11 -Wunreachable-code"
+		-Wno-return-std-move-in-c++11 -Wno-unreachable-code"
 
 clang-libc:
 	#clang-11 currently broken
-	#$(MAKE) CC=clang++-11 LD=clang++-11 OBJ=obj/clang CEXTRAFLAGS="-march=native 
+	#$(MAKE) CC=clang++-11 LD=clang++-11 OBJ=obj/clang CEXTRAFLAGS="-march=native
 	$(MAKE) CC=clang++-10 LD=clang++-10 OBJ=obj/clang-libc CEXTRAFLAGS="-march=native \
 		-stdlib=libc++ -mllvm -inline-threshold=2000 \
 		-Wunknown-warning-option \
@@ -320,7 +321,7 @@ clang-libc:
 		-Wmissing-variable-declarations -Wno-float-equal -Wconversion \
 		-Wno-c++98-compat -Wno-c++98-compat-pedantic -Wformat-nonliteral \
 		-Wno-exit-time-destructors -Winconsistent-missing-destructor-override \
-		-Wno-return-std-move-in-c++11 -Wunreachable-code" \
+		-Wno-return-std-move-in-c++11 -Wno-unreachable-code" \
 		LDEXTRAFLAGS=-stdlib=libc++
 
 clang-5:
@@ -360,8 +361,13 @@ mingw:
 #     LDEXTRAFLAGS = -municode
 #
 
+man: nltool$(EXESUFFIX) nlwav$(EXESUFFIX)
+	@mkdir -p man
+	@mkdir -p html
+	help2man --include=nltool.help2man --no-info ./nltool$(EXESUFFIX) > man/nltool.1
+	groff -mandoc -Thtml man/nltool.1 > html/nltool.html
 
-doc: nltool$(EXESUFFIX)
+doc: nltool$(EXESUFFIX) nlwav$(EXESUFFIX)
 	./nltool$(EXESUFFIX) -c docheader > ../documentation/devsyn.dox.h
 	$(DOXYGEN) doxygen.conf
 

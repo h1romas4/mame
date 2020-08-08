@@ -101,7 +101,8 @@ undoukai                        // A17 (c) 1984 Taito
 4d35                            // IP12: Personal Iris 4D/35, R3000A @36MHz
 
 @source:4enlinea.cpp
-4enlinea                        // (c) 1991 System Compumatic
+4enlinea                        // (c) 1991 Compumatic / CIC Play
+4enlineb                        // (c) 1991 Compumatic / CIC Play
 k7_olym                         // (c) 1994 K7 Kursaal
 sprtdart                        // (c) 1993 Compumatic / Desarrollos y Recambios S.L.
 
@@ -2771,6 +2772,7 @@ ncr3433                         // NCR Class 3433
 aavenger                        //
 atarians                        //
 midearth                        //
+mideartha                       //
 spcrider                        //
 time2000                        //
 
@@ -3361,6 +3363,7 @@ beta                            //
 
 @source:bfcobra.cpp
 beeline                         // 1991 BFM
+brkball                         // 1994 BFM / ATOD
 escounts                        // 1990 BFM
 inquiztr                        // 1989 BFM
 qos                             // 1992 BFM
@@ -9237,6 +9240,7 @@ bingor2                         // (c) 2002 Unknown
 bingor3                         // (c) 2002 Unknown
 bingor4                         // (c) 2002 Unknown
 bingor5                         // (c) 2002 Unknown
+bingor6                         // (c) 1991 AWR Hard & Soft
 vip2000                         // (c) Paloma-Elektronik
 
 @source:bingowav.cpp
@@ -10344,6 +10348,10 @@ wildplt                         // (c) 1992 Jaleco
 
 @source:cit101.cpp
 cit101                          // (c) 1980 C. Itoh
+cit101e                         // (c) 1983 C. Itoh
+
+@source:cit101xl.cpp
+cit101xl                        //
 
 @source:cit220.cpp
 cit220p                         // (c) 1984 C. Itoh
@@ -10544,6 +10552,7 @@ compis2                         // 1985 Telenova Compis
 @source:compuchess.cpp
 ccmk1                           // Chess Champion MK I
 cmpchess
+cmpchess2
 cncchess
 
 @source:compmahj.cpp
@@ -11064,6 +11073,7 @@ pzloop2jr1                      // 05/02/2001 (c) 2001 Mitchell (Japan)
 qndream                         // 26/08/1996 (c) 1996 (Japan)
 ringdest                        // 02/09/1994 (c) 1994 (Euro)
 ringdesta                       // 31/08/1994 (c) 1994 (Asia)
+ringdestb                       // 02/09/1994 (c) 1994 (Brazil) - factory region hack?
 ringdesth                       // 02/09/1994 (c) 1994 (Hispanic)
 ringdstd                        //
 rmancp2j                        // 22/09/1995 (c) 1995 (Japan)
@@ -11566,7 +11576,8 @@ dblcrown                        // (c) 1994 Excellent System
 
 @source:dblewing.cpp
 dblewing                        // MBE (c) 1993 Mitchell
-dblewinga                       // MBE (c) 1994 Mitchell
+dblewinga                       // MBE (c) 1993 Mitchell
+dblewingb                       // MBE (c) 1994 Mitchell
 
 @source:dbox.cpp
 dbox                            // (c) 1996 Nokia Multimedia
@@ -13519,6 +13530,7 @@ vbrc
 @source:fidel_cc1.cpp
 cc1                             //
 cc3                             //
+cc10c
 
 @source:fidel_cc10.cpp
 cc10                            //
@@ -13845,6 +13857,8 @@ elephfmb                        // (c) 1996 C.M.C.
 funquiz                         // (c) 198? Fun World
 funquiza                        // (c) 1990 Fun World
 funquizb                        // (c) 1990 Fun World
+gratispk                        // (c) 1995 Mega Soft
+gratispka                       // (c) 1995 Mega Soft
 jokercrd                        // (c) 1993 Vesely Svet
 jollycrd                        // (c) 1985 TAB-Austria
 jollycrda                       // (c) 1985 TAB-Austria
@@ -13861,13 +13875,18 @@ jolycdie                        // 1990 bootleg
 jolycdif                        // 1990 bootleg
 jolycdig                        // 1993 bootleg
 jolycdih                        // 1990 bootleg
+jolycdii                        // 1993 bootleg
 jolycdit                        // 199? bootleg
 jolycdsp                        // (c) 1992 TAB-Austria
 jolycmzs                        // (c) 1993 MZS Tech
 jolyjokr                        // (c) 198? Impera
 jolyjokra                       // (c) 198? Impera
-jolyjokrb                       // (c) 198? Impera
+jolyjokrb1                      // (c) 1985 Impera
+jolyjokrb2                      // (c) 1985 Impera
 jolyjokrc                       // (c) 198? Apple Time
+jolyjokrm                       // (c) 198? Impera
+jolyjokro                       // (c) 198? Impera
+jolyjokrp                       // (c) 198? Impera
 lluck3x3                        // (c) 1991 TAB-Austria
 lluck4x1                        // (c) 1991 TAB-Austria
 lunapark                        // 1998 unknown.
@@ -13881,6 +13900,7 @@ megacard                        // (c) 1993 Fun World
 mongolnw                        // 199? bootleg
 multiwin                        // (c) 1992 Fun World
 nevadafw                        // 199? unknown
+nkoulit                         // 1995 JK Amusement
 novoplay                        // (c) 1986 Novomatic
 pool10                          // (c) 1996 C.M.C.
 pool10b                         // (c) 1996 C.M.C.
@@ -13896,6 +13916,7 @@ biliard                         // 1998 bootleg.
 potgame                         // (c) 1996 C.M.C.
 powercrd                        // (c) 1993 Fun World
 rcdino4                         // 1998 unknown
+reflexcrd                       // (c) 1999 TAB-Austria
 royal                           // 2001, hack.
 royalcdfr                       // (c) 1991 TAB-Austria
 royalcrd                        // (c) 1991 TAB-Austria
@@ -13996,6 +14017,7 @@ surfplnt40                      // (c) 1997 - Ref 970514
 
 @source:gaelcof3.cpp
 autopapa                        //
+donpepito                       //
 susanita                        //
 
 @source:gaelcopc.cpp
@@ -14087,6 +14109,7 @@ armorcar                        // (c) 1981 Stern
 armorcar2                       // (c) 1981 Stern
 asideral                        // bootleg
 astrians                        //
+ataqandr                        // bootleg (FAR S.A.)
 atlantis                        // (c) 1981 Comsoft
 atlantis2                       // (c) 1981 Comsoft
 atlantisb                       // bootleg
@@ -14175,8 +14198,6 @@ moonaln                         // [Nichibutsu] (Karateco license) or hack
 mooncmw                         // bootleg
 mooncptc                        // bootleg (Petaco S.A.)
 sirio2                          // bootleg (Calfesa S.L.)
-sirio2a                         // bootleg (Calfesa S.L.)
-ataqandr                        // bootleg (FAR S.A.)
 mooncreg                        // bootleg
 mooncrgx                        // bootleg
 mooncrs2                        // bootleg
@@ -14786,6 +14807,7 @@ smartfps
 gormiti
 tkmag220                        //
 myac220
+imgame
 
 @source:generalplus_gpl16250_romram.cpp
 paccon
@@ -14807,6 +14829,7 @@ jak_swbstrik
 jak_tmnthp
 jak_dchp
 jak_ddhp
+jak_prhp
 
 @source:geneve.cpp
 geneve                          // 1987 Myarc Geneve 9640
@@ -15169,6 +15192,9 @@ cmastere                        // (c) 1991 Dyna Electronics
 cmasterf                        // (c) 1991 Dyna Electronics
 cmasterg                        // (c) 1991 Dyna Electronics
 cmasterh                        // (c) 1991 Dyna Electronics
+cmasteri                        // (c) 1991 Dyna Electronics
+cmasterj                        // (c) 1991 Dyna Electronics
+cmasterk                        // (c) 1991 Dyna Electronics
 cmezspin                        // (c) 1991 Dyna Electronics
 cmfun                           // (c) 1995 Dyna Electronics
 cmpacman                        //
@@ -15784,6 +15810,7 @@ racedrivcb                      // 136077           (c) 1990
 racedrivcb4                     // 136077           (c) 1990
 racedrivcg                      // 136077           (c) 1990
 racedrivcg4                     // 136077           (c) 1990
+racedrivcp                      // 136077           (c) 1990
 racedrivg                       // 136077           (c) 1990
 racedrivg1                      // 136077           (c) 1990
 racedrivg4                      // 136077           (c) 1990
@@ -15839,6 +15866,8 @@ hec2hrx                         //
 hec2mdhrx                       //
 hec2mx40                        //
 hec2mx80                        //
+hector1                         //
+interact                        //
 victor                          //
 
 @source:hektor.cpp
@@ -15924,6 +15953,7 @@ us2pfball                       // US Games
 uspbball                        // US Games
 
 @source:hh_sm510.cpp
+bassmate                        // Telko
 exospace                        // Elektronika
 gnw_ball                        // Nintendo
 gnw_bfight                      // Nintendo
@@ -16681,10 +16711,6 @@ intlc440                        //
 @source:intellect02.cpp
 intel02                         //
 
-@source:interact.cpp
-hector1                         //
-interact                        //
-
 @source:interpro.cpp
 ip2000                          // Intergraph InterPro/InterServe 20x0
 ip2400                          // Intergraph InterPro/InterServe 24x0
@@ -17171,6 +17197,7 @@ tqst                            // (c) ACE?
 trivialp                        // (c) 1996
 trivialpd                       // (c) 1996
 trivialpo                       // (c) 1996
+jpmreno
 
 @source:jpmimpctsw.cpp
 j6aceclb                        // Ace Of Clubs (Crystal)
@@ -19517,6 +19544,7 @@ lucky21                         // (c) 199? Wing Co. Ltd
 lucky21d                        // (c) 199? Wing Co. Ltd
 lucky25                         // (c) 199? Wing Co. Ltd
 lucky37                         // (c) 199? Wing Co. Ltd
+bingo75                         // (c) 199? Wing Co. Ltd
 
 @source:lucky74.cpp
 excitbj                         // (c) 1992 Wing Co. Ltd
@@ -19879,10 +19907,14 @@ magicardb                       // (c) 199? Impera
 magicarde                       // (c) 1994 Impera
 magicardf                       // (c) 199? Impera
 magicardj                       // (c) 1998 Impera
+magicardw                       // (c) 1993 Impera
 magicle                         // (c) 2001 Impera
 quingo                          // (c) 1999 Impera
 belslots                        // (c) 1999 Impera
 bigdeal0                        // (c) 2001 Impera
+puzzleme                        // (c) 199? Impera
+unkte06                         // (c) 199? Impera
+lucky7i                         // (c) 199? Impera
 
 @source:magiceyes_pollux_vr3520f.cpp
 didj                            // (c) 2008 Leapfrog
@@ -22109,6 +22141,7 @@ megajet                         // 1993 Sega Mega Jet (Japan)
 
 @source:megadriv_acbl.cpp
 aladmdb                         // MegaDrive-based hack
+barek2mb                        // MegaDrive-based hack
 barek3mb                        // MegaDrive-based hack
 jparkmb                         // MegaDrive-based hack
 mk3mdb                          // MegaDrive-based hack
@@ -22645,8 +22678,10 @@ tankbatl                        // (c) 1992 Microprose Games Inc.
 dm3270                          //
 
 @source:microdar.cpp
-microdar                        //
+dibifuca                        //
 cfarwest                        // (c) 1997 Compumatic
+prospdp                         // (c) 1997 Compumatic
+diolakoa                        // (c) 1997 Compumatic
 
 @source:microdec.cpp
 md2                             //
@@ -22724,6 +22759,7 @@ nbajamten                       // (c) 1995 Midway
 crusnusa                        // (c) 1994 Midway
 crusnusa21                      // (c) 1994 Midway
 crusnusa40                      // (c) 1994 Midway
+crusnusa41                      // (c) 1994 Midway
 crusnwld                        // (c) 1996 Midway
 crusnwld13                      // (c) 1996 Midway
 crusnwld17                      // (c) 1996 Midway
@@ -23038,7 +23074,8 @@ daytonat                        // 1994?   Kyle Hodgetts hack
 daytonata                       // 1994?   Kyle Hodgetts hack
 daytonagtx                      // 2004    Kyle Hodgetts hack
 desert                          // 1994.07 Desert Tank
-doa                             // 1996.11 Dead or Alive (Revision B)
+doa                             // 1997.01 Dead or Alive (Revision C)
+doab                            // 1996.12 Dead or Alive (Revision B)
 doaa                            // 1996.11 Dead or Alive (Revision A)
 dynabb                          // 1996.08 Dynamite Baseball
 dynabb97                        // 1997.04 Dynamite Baseball 97 (Revision A)
@@ -23382,6 +23419,7 @@ m4chaseic                       //
 m4chaseid                       //
 m4chaseie                       //
 m4chaseif                       //
+m4chaseig                       //
 m4clbveg                        // Club Vegas (Barcrest)
 m4clbvega                       //
 m4clbvegb                       //
@@ -25300,6 +25338,17 @@ m4monte__j                      //
 m4monte__k                      //
 m4monte__l                      //
 m4monte__m                      //
+m4montez
+m4monteza
+m4montezb
+m4montezc
+m4montezd
+m4monteze
+m4montezf
+m4montezg
+m4montezh
+m4montezi
+m4montezj
 m4nudbnk                        // Nudge Banker (Barcrest)
 m4nudbnk__a                     //
 m4nudbnk__b                     //
@@ -28956,66 +29005,340 @@ v4barqs2                        // Barquest 2 (v0.3)
 v4barqst                        // Barquest (v2.6)
 v4barqstd                       //
 v4big40                         // Big 40
+v4big40a
+v4big40b
+v4big40c
+v4big40d
+v4big40e
+v4big40f
+v4big40g
+v4big40h
+v4big40i
+v4big40j
+v4big40k
 v4bigfrt                        // Big Fruits
+v4bigfrta
+v4bigfrtb
+v4bigfrtc
 v4bios                          // MPU4 Video Firmware
 v4blox                          // Blox
 v4bloxd                         //
 v4bubbnk                        // Bubbly Bonk
+v4bubbnka
+v4bubbnkb
+v4bubbnkc
+v4bubbnkd
 v4bulblx                        // Bullion Blox
+v4bulblxa
+v4bulblxb
+v4bulblxc
 v4cmaze                         // The Crystal Maze (v1.3)
 v4cmaze2                        // The New Crystal Maze Featuring Ocean Zone
-v4cmaze2a                       //
+v4cmaze2_amld                       //
 v4cmaze2b                       //
 v4cmaze2c                       //
 v4cmaze2d                       //
 v4cmaze3                        // The Crystal Maze Team Challenge
-v4cmaze3a                       //
+v4cmaze3_amld                       //
 v4cmaze3b                       //
 v4cmaze3c                       //
 v4cmaze3d                       //
-v4cmazea                        //
+v4cmaze_amld                        //
 v4cmazeb                        //
 v4cmazec                        //
 v4cmazed                        //
 v4cmazedat                      //
 v4cshinf                        // Cash Inferno
+v4cshinfa
+v4cshinfb
+v4cshinfd
+v4cshinfe
+v4cshinff
+v4cshinfg
+v4cshinfh
+v4cshinfi
+v4cshinfj
+v4cshinfk
+v4cshinfl
+v4cshinfm
+v4cshinfn
+v4cshinfo
+v4cshinfp
+v4cshinfq
+v4cshinfr
+v4cshinfs
+v4cshinf3
+v4cshinfu
+v4cshinf3a
+v4cshinfw
 v4cybcas                        // Cyber Casino
 v4dbltak                        // Double Take
+v4dbltaka
+v4dbltakb
 v4eyedwn                        // Eyes Down
 v4eyedwnd                       //
 v4frfact                        // Fruit Factory
+v4frfacta
+v4frfactb
+v4frfactc
+v4frfactd
+v4frfacte
+v4frfactf
 v4gldrsh                        // Gold Rush
+v4gldrsha
+v4gldrshb
+v4gldrshc
+v4gldrshd
+v4gldrshe
+v4gldrshf
+v4gldrshg
+v4gldrshh
+v4gldrshi
+v4gldrshj
+v4gldrshk
+v4gldrshl
+v4gldrshm
+v4gldrshn
+v4gldrsho
+v4gldrshp
+v4gldrshq
+v4gldrshr
+v4gldrshs
+v4gldrsht
+v4gldrshu
 v4mate                          // The Mating Game
 v4mated                         //
 v4mazbel                        // Mazooma Belle
-v4mazbla                        //
+v4mazbel15                        //
+v4mazbel15a
 v4mdice                         // Miami Dice
+v4mdicea
+v4mdiceb
+v4mdicec
+v4mdiced
+v4mdicee
+v4mdicef
+v4mdiceg
+v4mdiceh
+v4mdicei
+v4mdicej
+v4mdicek
+v4mdicel
+v4mdicem
+v4mdicen
+v4mdiceo
+v4mdicep
+v4mdiceq
+v4mdicer
+v4mdices
+v4mdicet
+v4mdiceu
+v4mdicev
+v4mdicew
+v4mdice5
 v4megbuk                        // Megabucks Poker
-v4miami                         // Miami Dice
+v4megbuka
+v4megbukb
+v4megbukc
+v4mdiceger                         // Miami Dice
 v4missis                        // Mississippi Lady
 v4monte                         // Monte Carlo Or Bust
+v4montea
+v4montec
+v4monted
+v4montee
+v4monteg
+v4monteb
+v4monteba
+v4montebb
+v4monte5
+v4monte5a
+v4monte5b
+v4montek
+v4montel
+v4montem
+v4monten
+v4monteo
+v4montep
+v4monteq
+v4monter
+v4montes
+v4montet
+v4monteu
+v4montev
+v4montew
+v4montex
+v4montey
+v4montez
+v4monteaa
+v4monteab
+v4monteac
+v4montead
+v4monteae
+v4monteaf
+v4monteag
+v4monteah
+v4monteai
+v4monteaj
+v4monteak
+v4monteal
+v4monteam
+v4montean
+v4monteao
+v4monte9
+v4monte9a
+v4monte9b
+v4monte9c
+v4monte9d
+v4monte9e
+v4monte9f
+v4monte9g
+v4monte9h
+v4monte9i
+v4monte9j
+v4monte9k
+v4monte9l
+v4monte9m
+v4monte9n
+v4monte9o
+v4montezz
 v4opt3                          // Option 3
 v4opt3d                         //
 v4ovrmn3                        // Over Moon Pt3
+v4ovrmn3a
+v4ovrmn3b
+v4ovrmn3c
+v4ovrmn3d
 v4picdil                        // Piccadilly Nights
 v4psi                           // Prize Space Invaders
-v4psia                          //
-v4psib                          //
-v4psi14d                        //
-v4psi20d                        //
-v4psi214                        //
+v4psibc                          //
+v4psi14                          //
+v4psibcd                        //
+v4psid                        //
+v4psi14a                        //
 v4pztet                         // Prize Tetris
-v4pzteta                        //
+v4pzteta
+v4pztetb                        //
+v4pztetc
 v4quidgr                        // Ten Quid Grid
 v4quidgr2                       //
 v4quidgr2d                      //
 v4quidgrd                       //
 v4redhtp                        // Red Hot Poker
+v4redhtpa
+v4redhtpb
+v4redhtpc
+v4redhtpd
+v4redhtpe
+v4redhtpf
+v4redhtpg
+v4redhtph
+v4redhtpi
+v4redhtpj
+v4redhtpk
+v4redhtpl
+v4redhtpm
+v4redhtpn
+v4redhtpo
+v4redhtpp
+v4redhtpq
+v4redhtpr
+v4redhtps
+v4redhtpt
+v4redhtpu
+v4redhtpv
+v4redhtpw
+v4redhtpx
+v4redhtpy
+v4redhtpz
+v4redhtpaa
+v4redhtpab
+v4redhtparc
+v4redhtpunk
+v4redhtp2
+v4redhtp2a
+v4redhtp2b
+v4redhtp2c
+v4redhtp2d
+v4redhtp2e
+v4redhtp2f
+v4redhtp2g
+v4redhtp2z
 v4rencas                        // Reno Casino
+v4rencasa
+v4rencasb
+v4rencasc
+v4rencasd
+v4rencase
+v4rencasf
+v4rencasg
+v4rencash
+v4rencasi
 v4reno                          // Reno Reels
+v4renoa
+v4renob
+v4renoc
+v4renod
+v4renoe
+v4renof
+v4renog
+v4renoh
+v4renoi
+v4renoj
+v4renok
+v4renol
+v4renom
+v4renon
+v4renoo
+v4renop
+v4renoq
+v4renor
+v4renos
+v4renot
+v4renou
+v4reno8
+v4reno7
+v4reno5
 v4rhmaz                         // Red Hot Mazooma Belle
+v4rhmaza
+v4rhmazb
+v4rhmazc
+v4rhmazd
+v4rhmaze
+v4rhmazf
+v4rhmazg
+v4rhmazh
+v4rhmazi
+v4rhmazj
+v4rhmazk
 v4shpwnd                        // Shop Window
+v4shpwnda
+v4shpwndb
+v4shpwndc
+v4shpwndd
+v4shpwnde
+v4shpwndf
+v4shpwndg
+v4shpwndh
+v4shpwndi
+v4shpwndj
+v4shpwndk
+v4shpwndl
+v4shpwndm
 v4sixx                          // 6-X
+v4sixxa
+v4sixxb
+v4sixxc
+v4sixxd
+v4sixxe
+v4sixxf
+v4sixxg
+v4sixxh
+v4sixxi
+v4sixxj
+v4sixxk
+v4sixxl
+v4sixxm
 v4sklcsh                        // Skill Cash
 v4skltrk                        // Skill Trek
 v4skltrka                       //
@@ -29024,14 +29347,52 @@ v4strike2                       //
 v4strike2d                      //
 v4striked                       //
 v4sunbst                        // Sunburst
+v4sunbsta
+v4sunbstb
+v4sunbstc
+v4sunbstd
+v4sunbste
+v4sunbstf
+v4sunbstg
+v4sunbsth
+v4sunbsti
+v4sunbstj
+v4sunbstk
+v4sunbstl
+v4sunbstm
+v4sunbstn
+v4sunbsto
+v4sunbstp
+v4sunbstq
+v4sunbstr
+v4sunbsts
+v4sunbstt
+v4sunbstu
 v4tetrs                         // BwB Tetris v 2.2
 v4tetrs1                        // BwB Tetris v 1.0
-v4time                          // Time Machine
+v4tmach                         // Time Machine
+v4tmachd
+v4tmach1
+v4tmach1d
+v4tmach2
+v4tmach2d
 v4timebn                        // Time Bandit
+v4timebna
+v4timebnb
+v4timebnc
+v4timebnd
+v4timebne
 v4turnov                        // Turnover
+v4turnova
+v4turnovc
+v4turnovd
 v4vgpok                         // Vegas Poker (prototype release 2)
 v4wize                          // Wize Move (v1.3d)
-v4wizea                         // Wize Move
+v4wizen
+v4wizeb
+v4wizec
+v4wized
+v4wizeo                         // Wize Move
 
 @source:mpu5sw.cpp
 m55050                          // Fifty Fifty (Bwb)
@@ -31716,7 +32077,9 @@ bandggcn
 cpatrolm
 ts_handy11
 ablwikid
+maxx5in1
 maxx6in1
+max10in1
 
 @source:nes_vt.cpp
 vdogdeme
@@ -31735,6 +32098,10 @@ lxcmcysw
 lxcmcyfz
 lxcmcydp
 lxcmcysp
+lxcmcypp
+lxcmcycr
+lxccminn
+lxccplan
 rtvgc300
 rtvgc300fz
 red5mam
@@ -31801,22 +32168,29 @@ otrail
 denv150
 techni4
 duetpp
+sporzbx
 ablmini
 senwld
+zonefusn
 
 @source:vt1682.cpp
 ii8in1
 ii32in1
 zone7in1
+zone7in1p
+dance555
 miwi2_16
 miwi2_7
 intact89
 intg5410
 exsprt48
 itvg48
+xing48
 wowwg
 110dance
 lxts3
+unk1682
+njp60in1
 
 @source:newbrain.cpp
 newbrain                        //
@@ -32129,6 +32503,7 @@ sfortea1                        //
 sfortea2                        //
 sforteb                         //
 sfortec                         //
+sfortec1                        //
 
 @source:novag_supremo.cpp
 supremo
@@ -32199,7 +32574,8 @@ g7400                           // 1983 Videopac Plus G7400
 jopac                           // 1983 Jopac JO7400
 odyssey2                        // Magnavox Odyssey 2 - 1978-1983
 odyssey3                        // Magnavox Odyssey 3 / Command Center (prototype)
-videopac                        // 1979 Videopac G7000/C52
+videopac                        // 1979 Videopac G7000
+videopacf                       // 1979 Videopac C52
 
 @source:offtwall.cpp
 offtwall                        // 136090           (c) 1991
@@ -34554,6 +34930,7 @@ slithera                        // (c) 1982 Century II
 zookeep                         // ZA  (c) 1982 Taito America Corporation
 zookeep2                        // ZA  (c) 1982 Taito America Corporation
 zookeep3                        // ZA  (c) 1982 Taito America Corporation
+zookeepbl                       // bootleg
 
 @source:ql.cpp
 ql                              // 1984 Sinclair QL (UK)
@@ -35375,6 +35752,7 @@ ccompan
 
 @source:saitek_chesstrv.cpp
 chesstrv
+chesstrvi
 
 @source:saitek_corona.cpp
 corona
@@ -36382,6 +36760,7 @@ dinokich                        // 2010.05 Konglongwang - D-Kids VS Alpha Yaosai
 dinoki4                         // 2008.08 Kodai Ouja Kyouryuu King - Mezame yo! Arata-naru Chikara!! (Japan, Ver 4.000) (MDA-C0061)
 dinoking                        // 2005.09 Kodai Ouja Kyouryuu King / Ancient Ruler Dinosaur King
 dinokior                        //
+kingyoch                        // 2009.03 Yataimura Kingyosukui (4-player, China, Ver 1.000)
 loveber3                        //
 loveber3cn                      //
 lovebero                        //
@@ -37198,7 +37577,8 @@ tigerhj                         // A47 (c) 1985 Taito Corporation   GX-551 [not 
 opwolf3                         // D74 (c) 1994 Taito Corporation Japan
 opwolf3j                        // D74 (c) 1994 Taito Corporation
 opwolf3u                        // D74 (c) 1994 Taito America Corporation
-slapshot                        // D71 (c) 1994 Taito Corporation (Japan)
+slapshot                        // D71 (c) 1994 Taito Corporation Japan (Ver 3.0 O)
+slapshotj                       // D71 (c) 1994 Taito Corporation (Ver 2.2 J)
 
 @source:slc1.cpp
 slc1                            //
@@ -37274,6 +37654,7 @@ snespal                         // Nintendo Super Nintendo PAL
 @source:snesb51.cpp
 mk3snes
 snes4sl
+snes4sln
 
 @source:snesb.cpp
 denseib                         // bootleg
@@ -37516,13 +37897,16 @@ spec128                         // 1986 ZX Spectrum 128
 specpls2                        // 1986 ZX Spectrum +2
 
 @source:special.cpp
+anakonda                        //
 erik                            //
+kharkovsky                      //
 lik                             //
 pioner                          //
 special                         //
 specialm                        //
 specialp                        //
 specimx                         //
+unga                            //
 
 @source:special_gambl.cpp
 dindice                         //
@@ -37636,6 +38020,9 @@ pballpup
 swclone
 dreamlss
 senspeed
+ordentv
+wfcentro
+tiktokmm
 
 @source:spg2xx_digimake.cpp
 rad_digi
@@ -37730,6 +38117,7 @@ sentx6pd
 taikeegr                        //
 shredmjr                        //
 guitarst
+guitarstp
 
 @source:spg2xx_smarttv.cpp
 smartvad
@@ -37759,9 +38147,12 @@ itvg49
 zone60                          // Zone 60
 zone100                         //
 lx_jg7415                       //
+zonemini
+react
 
 @source:spg2xx_zone_32bit.cpp
 mywicodx                        //
+mywicogt
 zon32bit                        // Zone 32-bit
 oplayer
 dnv200fs
@@ -39892,6 +40283,7 @@ pipibibs                        // TP-025
 pipibibsa                       // TP-025
 pipibibsbl                      // (c) 1991 Ryouta Kikaku (bootleg)
 pipibibsbl2                     // bootleg
+pipibibsbl3                     // (c) 1991 Ryouta Kikaku (bootleg)
 pipibibsp                       // TP-025
 pwrkick                         // (c) 1994 Sunwise
 shippumd                        // (c) 1994 Raizing/8ing
@@ -41429,8 +41821,8 @@ robotron87                      //
 robotron12                      //
 robotrontd                      //
 sinistar                        // (c) 1982
-sinistar1                       // (c) 1982
 sinistar2                       // (c) 1982
+sinistarp                       // (c) 1982 prototype (shown at AMOA 1982 show)
 spdball                         // (c) 1985
 splat                           // (c) 1982
 stargate                        // (c) 1981
@@ -41881,15 +42273,11 @@ rad_snowp                       //
 rad_madf                        //
 rad_fb                          //
 rad_socr                        //
-epo_bowl                        //
 epo_esdx                        //
 epo_epp                         //
 epo_eppk                        //
 epo_epp3                        //
 epo_efdx                        //
-epo_tfit
-epo_ebox                        //
-epo_sdb                         //
 epo_guru                        //
 epo_dmon                        //
 rad_rh                          //
@@ -41904,8 +42292,6 @@ jarajal                         //
 tcarnavi                        //
 tomcpin
 tomplc
-mrangbat
-ban_onep                        //
 ekara                           //
 ekaraa                          //
 ekaraj                          //
@@ -41921,10 +42307,22 @@ taikodp                         //
 jpopira                         //
 evio                            //
 gcslottv                        //
+
+@source:xavix_2000.cpp
+epo_ebox                        //
+epo_bowl                        //
+epo_sdb                         //
 ttv_sw                          //
 ttv_lotr                        //
 ttv_mx                          //
 drgqst                          //
+ban_onep                        //
+
+@source:xavix_2002.cpp
+suprpctv
+udance
+mrangbat
+epo_tfit
 tmy_thom                        //
 xavtenni                        //
 xavbaseb                        //

@@ -24,10 +24,10 @@ namespace solver
 
 		using float_type = FT;
 
-		matrix_solver_ext_t(netlist_state_t &anetlist, const pstring &name,
+		matrix_solver_ext_t(devices::nld_solver &main_solver, const pstring &name,
 			const net_list_t &nets,
-			const solver_parameters_t *params, const std::size_t size)
-		: matrix_solver_t(anetlist, name, nets, params)
+			const solver::solver_parameters_t *params, const std::size_t size)
+		: matrix_solver_t(main_solver, name, nets, params)
 		, m_new_V(size)
 		, m_RHS(size)
 		, m_mat_ptr(size, this->max_railstart() + 1)
@@ -55,15 +55,6 @@ namespace solver
 
 		//PALIGNAS_VECTOROPT() parrays define alignment already
 		plib::pmatrix2d<float_type *> m_mat_ptr;
-
-		std::size_t max_railstart() const noexcept
-		{
-			std::size_t max_rail = 0;
-			for (std::size_t k = 0; k < m_terms.size(); k++)
-				max_rail = std::max(max_rail, m_terms[k].railstart());
-			return max_rail;
-		}
-
 
 		template <typename T, typename M>
 		void log_fill(const T &fill, M &mat)
@@ -168,7 +159,7 @@ namespace solver
 		{
 			const std::size_t iN = size();
 			for (std::size_t i = 0; i < iN; i++)
-				m_last_V[i] = static_cast<float_type>(this->m_terms[i].getV());
+				m_last_V[i] = gsl::narrow_cast<fptype>(this->m_terms[i].getV());
 		}
 
 		void restore() override
@@ -180,7 +171,7 @@ namespace solver
 
 		netlist_time compute_next_timestep(fptype cur_ts, fptype min_ts, fptype max_ts) override
 		{
-			fptype new_solver_timestep(max_ts);
+			fptype new_solver_timestep_sq(max_ts * max_ts);
 
 			for (std::size_t k = 0; k < size(); k++)
 			{
@@ -194,21 +185,21 @@ namespace solver
 				const fptype hn = cur_ts;
 
 				fptype DD2 = (DD_n / hn - m_DD_n_m_1[k] / m_h_n_m_1[k]) / (hn + m_h_n_m_1[k]);
-				fptype new_net_timestep(0);
 
 				m_h_n_m_1[k] = hn;
 				m_DD_n_m_1[k] = DD_n;
 				if (plib::abs(DD2) > fp_constants<fptype>::TIMESTEP_MINDIV()) // avoid div-by-zero
-					new_net_timestep = plib::sqrt(m_params.m_dynamic_lte / plib::abs(nlconst::half()*DD2));
-				else
-					new_net_timestep = max_ts;
-
-				new_solver_timestep = std::min(new_net_timestep, new_solver_timestep);
+				{
+					// save the sqrt for the end
+					const fptype new_net_timestep_sq = m_params.m_dynamic_lte / plib::abs(nlconst::half()*DD2);
+					new_solver_timestep_sq = std::min(new_net_timestep_sq, new_solver_timestep_sq);
+				}
 			}
-			new_solver_timestep = std::max(new_solver_timestep, min_ts);
+
+			new_solver_timestep_sq = std::max(plib::sqrt(new_solver_timestep_sq), min_ts);
 
 			// FIXME: Factor 2 below is important. Without, we get timing issues. This must be a bug elsewhere.
-			return std::max(netlist_time::from_fp(new_solver_timestep), netlist_time::quantum() * 2);
+			return std::max(netlist_time::from_fp(new_solver_timestep_sq), netlist_time::quantum() * 2);
 		}
 
 		template <typename M>

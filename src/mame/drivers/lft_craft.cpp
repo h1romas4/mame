@@ -2,7 +2,7 @@
 // copyright-holders:Ryan Holtz
 /**********************************************************************
 
- Craft, an ATmega88-based demo by Linus �kesson
+ Craft, an ATmega88-based demo by Linus Åkesson
 
 **********************************************************************/
 
@@ -14,7 +14,7 @@
 #include "emupal.h"
 #include "speaker.h"
 
-#define MASTER_CLOCK		20000000
+#define MASTER_CLOCK        20000000
 
 #define VISIBLE_CYCLES      480
 #define HSYNC_CYCLES        155
@@ -242,5 +242,5 @@ ROM_START( craft )
 	ROM_LOAD( "eeprom.raw", 0x0000, 0x0200, CRC(e18a2af9) SHA1(81fc6f2d391edfd3244870214fac37929af0ac0c) )
 ROM_END
 
-/*   YEAR  NAME      PARENT  COMPAT  MACHINE     INPUT        CLASS            INIT        COMPANY                 FULLNAME */
-CONS(2008, craft,    0,      0,      craft,      empty_input, lft_craft_state, empty_init, "Linus \xc3\xa3kesson", "Craft", MACHINE_IMPERFECT_GRAPHICS)
+/*   YEAR  NAME      PARENT  COMPAT  MACHINE     INPUT        CLASS            INIT        COMPANY            FULLNAME */
+CONS(2008, craft,    0,      0,      craft,      empty_input, lft_craft_state, empty_init, u8"Linus Åkesson", "Craft", MACHINE_IMPERFECT_GRAPHICS)

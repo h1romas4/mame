@@ -12,7 +12,7 @@
 #include "sound/volt_reg.h"
 #include "speaker.h"
 
-#define MASTER_CLOCK	8000000
+#define MASTER_CLOCK    8000000
 
 class lft_chiptune_state : public driver_device
 {
@@ -93,5 +93,5 @@ ROM_START( hwchiptn )
 ROM_END
 
 /*   YEAR  NAME      PARENT  COMPAT  MACHINE     INPUT        CLASS               INIT        COMPANY                 FULLNAME */
-CONS(2007, hwchiptn, 0,      0,      chiptune,   empty_input, lft_chiptune_state, empty_init, "Linus \xc3\xa3kesson / kryo", "The Hardware Chiptune Project", 0)
-CONS(2009, powernin, 0,      0,      chiptune,   empty_input, lft_chiptune_state, empty_init, "Linus \xc3\xa3kesson", "Power Ninja Action Challenge", 0)
+CONS(2007, hwchiptn, 0,      0,      chiptune,   empty_input, lft_chiptune_state, empty_init, u8"Linus Åkesson / kryo", "The Hardware Chiptune Project", 0)
+CONS(2009, powernin, 0,      0,      chiptune,   empty_input, lft_chiptune_state, empty_init, u8"Linus Åkesson", "Power Ninja Action Challenge", 0)

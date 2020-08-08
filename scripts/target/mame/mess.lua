@@ -349,6 +349,7 @@ VIDEOS["HD61603"] = true
 VIDEOS["HD61830"] = true
 --VIDEOS["HD63484"] = true
 VIDEOS["HD66421"] = true
+VIDEOS["HLCD0438"] = true
 VIDEOS["HLCD0488"] = true
 VIDEOS["HLCD0515"] = true
 VIDEOS["HLCD0538"] = true
@@ -859,6 +860,7 @@ BUSES["ISBX"] = true
 BUSES["JAKKS_GAMEKEY"] = true
 BUSES["HP80_IO"] = true
 BUSES["HP9845_IO"] = true
+BUSES["HP_IPC_IO"] = true
 BUSES["KC"] = true
 BUSES["LPCI"] = true
 BUSES["M5"] = true
@@ -1995,7 +1997,6 @@ files {
 	MAME_DIR .. "src/mame/drivers/ut88.cpp",
 	MAME_DIR .. "src/mame/includes/ut88.h",
 	MAME_DIR .. "src/mame/machine/ut88.cpp",
-	MAME_DIR .. "src/mame/video/ut88.cpp",
 	MAME_DIR .. "src/mame/drivers/vector06.cpp",
 	MAME_DIR .. "src/mame/includes/vector06.h",
 	MAME_DIR .. "src/mame/machine/vector06.cpp",
@@ -2035,6 +2036,7 @@ files {
 	MAME_DIR .. "src/mame/drivers/cit101.cpp",
 	MAME_DIR .. "src/mame/machine/cit101_kbd.cpp",
 	MAME_DIR .. "src/mame/machine/cit101_kbd.h",
+	MAME_DIR .. "src/mame/drivers/cit101xl.cpp",
 	MAME_DIR .. "src/mame/drivers/cit220.cpp",
 	MAME_DIR .. "src/mame/machine/cit220_kbd.cpp",
 	MAME_DIR .. "src/mame/machine/cit220_kbd.h",
@@ -2230,7 +2232,6 @@ files {
 	MAME_DIR .. "src/mame/drivers/bk.cpp",
 	MAME_DIR .. "src/mame/includes/bk.h",
 	MAME_DIR .. "src/mame/machine/bk.cpp",
-	MAME_DIR .. "src/mame/video/bk.cpp",
 	MAME_DIR .. "src/mame/drivers/dvk_kcgd.cpp",
 	MAME_DIR .. "src/mame/drivers/dvk_ksm.cpp",
 	MAME_DIR .. "src/mame/machine/ms7004.cpp",
@@ -2568,7 +2569,6 @@ files {
 	MAME_DIR .. "src/mame/includes/hec2hrp.h",
 	MAME_DIR .. "src/mame/machine/hec2hrp.cpp",
 	MAME_DIR .. "src/mame/video/hec2hrp.cpp",
-	MAME_DIR .. "src/mame/drivers/interact.cpp",
 }
 
 createMESSProjects(_target, _subtarget, "heurikon")
@@ -2834,7 +2834,6 @@ files {
 	MAME_DIR .. "src/mame/drivers/primo.cpp",
 	MAME_DIR .. "src/mame/includes/primo.h",
 	MAME_DIR .. "src/mame/machine/primo.cpp",
-	MAME_DIR .. "src/mame/video/primo.cpp",
 }
 
 createMESSProjects(_target, _subtarget, "microsoft")
@@ -4006,10 +4005,14 @@ files {
 	MAME_DIR .. "src/mame/machine/generalplus_gpl16250.h",
 	MAME_DIR .. "src/mame/drivers/generalplus_gpl32612.cpp",
 	MAME_DIR .. "src/mame/drivers/xavix.cpp",
+	MAME_DIR .. "src/mame/includes/xavix.h",
+	MAME_DIR .. "src/mame/drivers/xavix_2000.cpp",
+	MAME_DIR .. "src/mame/includes/xavix_2000.h",
+	MAME_DIR .. "src/mame/drivers/xavix_2002.cpp",
+	MAME_DIR .. "src/mame/includes/xavix_2002.h",
 	MAME_DIR .. "src/mame/video/xavix.cpp",
 	MAME_DIR .. "src/mame/machine/xavix.cpp",
 	MAME_DIR .. "src/mame/audio/xavix.cpp",
-	MAME_DIR .. "src/mame/includes/xavix.h",
 	MAME_DIR .. "src/mame/machine/xavix_mtrk_wheel.cpp",
 	MAME_DIR .. "src/mame/machine/xavix_mtrk_wheel.h",
 	MAME_DIR .. "src/mame/machine/xavix_madfb_ball.cpp",

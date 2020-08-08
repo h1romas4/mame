@@ -9,9 +9,9 @@
 #define NL_CORE_SETUP_H_
 
 #include "../nl_config.h"
-#include "../nltypes.h"
 #include "../nl_factory.h"
 #include "../nl_setup.h"
+#include "../nltypes.h"
 
 #include "../plib/ppreprocessor.h"
 #include "../plib/pstream.h"
@@ -281,6 +281,22 @@ namespace netlist
 
 	private:
 		pstring m_filename;
+	};
+
+	class source_pattern_t : public source_netlist_t
+	{
+	public:
+
+		explicit source_pattern_t(const pstring &pat)
+		: m_pattern(pat)
+		{
+		}
+
+	protected:
+		stream_ptr stream(const pstring &name) override;
+
+	private:
+		pstring m_pattern;
 	};
 
 	class source_mem_t : public source_netlist_t

@@ -1,15 +1,25 @@
 // license:GPL-2.0+
 // copyright-holders:Couriersud
 /*
- * nld_log.c
+ * nld_log.cpp
+ *
+ *  Devices supporting analysis and logging
+ *
+ *  nld_log:
+ *
+ *          +---------+
+ *          |    ++   |
+ *        I |         | ==> Log to file "netlist_" + name() + ".log"
+ *          |         |
+ *          +---------+
  *
  */
 
 #include "netlist/nl_base.h"
 #include "nld_log.h"
 #include "plib/pfmtlog.h"
-#include "plib/pstream.h"
 #include "plib/pmulti_threading.h"
+#include "plib/pstream.h"
 //#include "sound/wavwrite.h"
 
 #include <array>
@@ -45,6 +55,8 @@ namespace netlist
 			m_write_thread = std::thread([this]{this->thread_writer(); });
 			m_sem_r.acquire();
 		}
+
+		PCOPYASSIGNMOVE(NETLIB_NAME(log), delete)
 
 		NETLIB_DESTRUCTOR(log)
 		{

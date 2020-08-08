@@ -322,6 +322,7 @@ VIDEOS["HD44780"] = true
 VIDEOS["HD61830"] = true
 VIDEOS["HD63484"] = true
 --VIDEOS["HD66421"] = true
+--VIDEOS["HLCD0438"] = true
 --VIDEOS["HLCD0488"] = true
 --VIDEOS["HLCD0515"] = true
 --VIDEOS["HLCD0538"] = true
@@ -981,6 +982,8 @@ function createProjects_mame_arcade(_target, _subtarget)
 
 createMAMEProjects(_target, _subtarget, "shared")
 files {
+	MAME_DIR .. "src/mame/machine/bacta_datalogger.h",
+	MAME_DIR .. "src/mame/machine/bacta_datalogger.cpp",
 	MAME_DIR .. "src/mame/machine/nmk112.cpp",
 	MAME_DIR .. "src/mame/machine/nmk112.h",
 	MAME_DIR .. "src/mame/machine/pcshare.cpp",
@@ -1568,7 +1571,33 @@ files {
 	MAME_DIR .. "src/mame/drivers/cinemat.cpp",
 	MAME_DIR .. "src/mame/includes/cinemat.h",
 	MAME_DIR .. "src/mame/audio/cinemat.cpp",
+	MAME_DIR .. "src/mame/audio/cinemat.h",
 	MAME_DIR .. "src/mame/video/cinemat.cpp",
+	MAME_DIR .. "src/mame/audio/nl_armora.cpp",
+	MAME_DIR .. "src/mame/audio/nl_armora.h",
+	MAME_DIR .. "src/mame/audio/nl_barrier.cpp",
+	MAME_DIR .. "src/mame/audio/nl_barrier.h",
+	MAME_DIR .. "src/mame/audio/nl_boxingb.cpp",
+	MAME_DIR .. "src/mame/audio/nl_boxingb.h",
+	MAME_DIR .. "src/mame/audio/nl_cinemat_common.h",
+	MAME_DIR .. "src/mame/audio/nl_ripoff.cpp",
+	MAME_DIR .. "src/mame/audio/nl_ripoff.h",
+	MAME_DIR .. "src/mame/audio/nl_solarq.cpp",
+	MAME_DIR .. "src/mame/audio/nl_solarq.h",
+	MAME_DIR .. "src/mame/audio/nl_spacewar.cpp",
+	MAME_DIR .. "src/mame/audio/nl_spacewar.h",
+	MAME_DIR .. "src/mame/audio/nl_speedfrk.cpp",
+	MAME_DIR .. "src/mame/audio/nl_speedfrk.h",
+	MAME_DIR .. "src/mame/audio/nl_starcas.cpp",
+	MAME_DIR .. "src/mame/audio/nl_starcas.h",
+	MAME_DIR .. "src/mame/audio/nl_starhawk.cpp",
+	MAME_DIR .. "src/mame/audio/nl_starhawk.h",
+	MAME_DIR .. "src/mame/audio/nl_sundance.cpp",
+	MAME_DIR .. "src/mame/audio/nl_sundance.h",
+	MAME_DIR .. "src/mame/audio/nl_tailg.cpp",
+	MAME_DIR .. "src/mame/audio/nl_tailg.h",
+	MAME_DIR .. "src/mame/audio/nl_warrior.cpp",
+	MAME_DIR .. "src/mame/audio/nl_warrior.h",
 	MAME_DIR .. "src/mame/drivers/cchasm.cpp",
 	MAME_DIR .. "src/mame/includes/cchasm.h",
 	MAME_DIR .. "src/mame/machine/cchasm.cpp",
@@ -1888,6 +1917,8 @@ files {
 
 createMAMEProjects(_target, _subtarget, "exidy")
 files {
+	MAME_DIR .. "src/mame/audio/nl_carpolo.h",
+	MAME_DIR .. "src/mame/audio/nl_carpolo.cpp",
 	MAME_DIR .. "src/mame/drivers/carpolo.cpp",
 	MAME_DIR .. "src/mame/includes/carpolo.h",
 	MAME_DIR .. "src/mame/machine/carpolo.cpp",
@@ -1917,6 +1948,8 @@ files {
 	MAME_DIR .. "src/mame/video/antic.h",
 	MAME_DIR .. "src/mame/video/gtia.cpp",
 	MAME_DIR .. "src/mame/video/gtia.h",
+	MAME_DIR .. "src/mame/audio/nl_fireone.h",
+	MAME_DIR .. "src/mame/audio/nl_fireone.cpp",
 	MAME_DIR .. "src/mame/drivers/starfire.cpp",
 	MAME_DIR .. "src/mame/includes/starfire.h",
 	MAME_DIR .. "src/mame/video/starfire.cpp",
@@ -2948,6 +2981,8 @@ files {
 	MAME_DIR .. "src/mame/includes/skykid.h",
 	MAME_DIR .. "src/mame/video/skykid.cpp",
 	MAME_DIR .. "src/mame/drivers/sweetland.cpp",
+	MAME_DIR .. "src/mame/audio/nl_tankbatt.h",
+	MAME_DIR .. "src/mame/audio/nl_tankbatt.cpp",
 	MAME_DIR .. "src/mame/drivers/tankbatt.cpp",
 	MAME_DIR .. "src/mame/includes/tankbatt.h",
 	MAME_DIR .. "src/mame/video/tankbatt.cpp",
@@ -3328,6 +3363,8 @@ files {
 	MAME_DIR .. "src/mame/drivers/starcrus.cpp",
 	MAME_DIR .. "src/mame/includes/starcrus.h",
 	MAME_DIR .. "src/mame/video/starcrus.cpp",
+	MAME_DIR .. "src/mame/audio/nl_starcrus.cpp",
+	MAME_DIR .. "src/mame/audio/nl_starcrus.h",
 }
 
 createMAMEProjects(_target, _subtarget, "rare")
@@ -4991,7 +5028,7 @@ files {
 	MAME_DIR .. "src/mame/drivers/sothello.cpp",
 	MAME_DIR .. "src/mame/drivers/special_gambl.cpp",
 	MAME_DIR .. "src/mame/audio/special.cpp",
-	MAME_DIR .. "src/mame/audio/special.h",		
+	MAME_DIR .. "src/mame/audio/special.h",
 	MAME_DIR .. "src/mame/drivers/spool99.cpp",
 	MAME_DIR .. "src/mame/drivers/sprcros2.cpp",
 	MAME_DIR .. "src/mame/drivers/sshot.cpp",

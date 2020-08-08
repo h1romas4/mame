@@ -7,15 +7,15 @@
         and pressing the start button, or else you get "PINBALL MISSING":
     W (right ball shooter, c6 r2)
     E (right trough, c6 r3)
-    [ (dummy jaw opto, c5 r1)
-    ] (right outlane, c5 r2)
-    \ (right slingshot kicker, c5 r3)
+    DEL (dummy jaw opto, c5 r1)
+    HOME (right outlane, c5 r2)
+    END (right slingshot kicker, c5 r3)
     It's possible not all of these are strictly necessary to make it work.
 
     TODO: replace the 8x8 pinball input matrix keymap by some sort of common
-    interface for the williams system 6, 9, 10, 11 and wpc_an;
+    interface for the Williams system 6, 9, 10, 11/a/b/c and WPC;
     while the actual purpose of the switches differ per machine (and some
-    machines like wpc_an have one switch permanently closed as a test switch),
+    machines like WPC have one switch permanently closed as a test switch),
     the entire matrix should be mapped to keyboard keys, there are more than
     enough keys on a 104 key keyboard to do it, even avoiding MAME's reserved
     keys.
@@ -23,7 +23,7 @@
     The A-13502 System11 BG sound adapter board (used by Dr. Dude WPC, and by
     the 200 or so prototype Funhouse machines):
     See https://www.ipdb.org/files/966/Williams_1990_Funhouse_Prototype_Manual_Addendum.pdf
-    The funhouse prototype manual addendum shows the A-13502 board connets to
+    The Funhouse prototype manual addendum shows the A-13502 board connects to
     the HDR 17X2 "I/O SOUND" connector as such:
      A4 A3 A2 A1 A0 WDEN R/W
       0  x  x  x  x    x   x   open bus
@@ -105,7 +105,7 @@ private:
 
 	// devices
 	required_device<cpu_device> m_maincpu;
-	optional_device<s11c_bg_device> m_bg;  // only used with Dr. Dude
+	optional_device<s11c_bg_device> m_bg;  // only used w/ Dr. Dude and Funhouse Proto
 	optional_device<wpcsnd_device> m_wpcsnd;
 	required_memory_bank m_cpubank;
 	required_device<wpc_device> m_wpc;
@@ -442,7 +442,6 @@ void wpc_an_state::wpc_an_dd(machine_config &config)
 
 	SPEAKER(config, "speaker").front_center();
 	S11C_BG(config, m_bg);
-	m_bg->set_romregion("sound1");
 	m_bg->add_route(ALL_OUTPUTS, "speaker", 1.0);
 }
 
@@ -452,7 +451,7 @@ void wpc_an_state::wpc_an_dd(machine_config &config)
 ROM_START(dd_p7)
 	ROM_REGION(0x30000, "maincpu", ROMREGION_ERASEFF)
 	ROM_LOAD("dude_u6.p7", 0x10000, 0x20000, CRC(b6c35b98) SHA1(5e9d70ce40669e2f402561dc1d8aa70a8b8a2958))
-	ROM_REGION(0x80000, "sound1", ROMREGION_ERASEFF)
+	ROM_REGION(0x80000, "bg:cpu", ROMREGION_ERASEFF)
 	ROM_LOAD("dude_u4.l1", 0x00000, 0x10000, CRC(3eeef714) SHA1(74dcc83958cb62819e0ac36ca83001694faafec7))
 	ROM_RELOAD( 0x10000, 0x10000)
 	ROM_LOAD("dude_u19.l1", 0x20000, 0x10000, CRC(dc7b985b) SHA1(f672d1f1fe1d1d887113ea6ccd745a78f7760526))
@@ -466,7 +465,7 @@ ROM_END
 ROM_START(dd_p06)
 	ROM_REGION(0x30000, "maincpu", ROMREGION_ERASEFF)
 	ROM_LOAD("u6-pa6.wpc", 0x10000, 0x20000, CRC(fb72571b) SHA1(a12b32eac3141c881064e6de2f49d6d213248fde))
-	ROM_REGION(0x80000, "sound1", ROMREGION_ERASEFF)
+	ROM_REGION(0x80000, "bg:cpu", ROMREGION_ERASEFF)
 	ROM_LOAD("dude_u4.l1", 0x00000, 0x10000, CRC(3eeef714) SHA1(74dcc83958cb62819e0ac36ca83001694faafec7))
 	ROM_RELOAD( 0x10000, 0x10000)
 	ROM_LOAD("dude_u19.l1", 0x20000, 0x10000, CRC(dc7b985b) SHA1(f672d1f1fe1d1d887113ea6ccd745a78f7760526))
@@ -623,7 +622,7 @@ ROM_END
 ROM_START(fh_pa1)
 	ROM_REGION(0x30000, "maincpu", ROMREGION_ERASEFF)
 	ROM_LOAD("u6-l2.rom", 0x10000, 0x20000, CRC(7a8a3278) SHA1(b35c1149862724ea70cc810f14141e51b365e950))
-	ROM_REGION(0x80000, "sound1", ROMREGION_ERASEFF)
+	ROM_REGION(0x80000, "bg:cpu", ROMREGION_ERASEFF)
 	ROM_LOAD("fh_u4.pa1", 0x00000, 0x20000, CRC(9f0a716d) SHA1(3d3ec250b0b4344844ad8ce5bcbb326f934b22d3))
 	ROM_LOAD("fh_u19.pa1", 0x20000, 0x20000, CRC(b0fb5ddf) SHA1(138c2aa283f7ced90637e981063f520bf46c57df))
 	ROM_LOAD("fh_u20.pa1", 0x40000, 0x20000, CRC(bb864f78) SHA1(ed861bd5df382e7efac103a1acb3d810ee4b15dc))

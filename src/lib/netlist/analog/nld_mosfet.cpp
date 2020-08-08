@@ -279,7 +279,7 @@ namespace analog
 
 			m_vto = m_modacc.m_VTO;
 			// FIXME zero conversion
-			if(m_vto != nlconst::zero())
+			if(m_vto == nlconst::zero())
 				log().warning(MW_MOSFET_THRESHOLD_VOLTAGE(m_model.name()));
 
 			// FIXME: VTO if missing may be calculated from TPG, NSS and temperature. Usually models
@@ -333,13 +333,12 @@ namespace analog
 
 		NETLIB_HANDLERI(termhandler)
 		{
-			// FIXME: This should never be called
-			if (!m_SG.P().net().is_rail_net())
-				m_SG.P().solve_now();   // Basis
-			else if (!m_SG.N().net().is_rail_net())
-				m_SG.N().solve_now();   // Emitter
+			// only called if connected to a rail net ==> notify the solver to recalculate
+			auto *solv(m_SG.solver());
+			if (solv != nullptr)
+				solv->solve_now();
 			else
-				m_DG.N().solve_now();   // Collector
+				m_DG.solver()->solve_now();
 		}
 		NETLIB_UPDATE_PARAMI();
 		NETLIB_UPDATE_TERMINALSI();

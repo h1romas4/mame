@@ -24,7 +24,7 @@ namespace netlist
 	PERRMSGV(MF_NULLPTR_FAMILY,                     2, "Unable to determine family for device {1} from model {2}")
 	PERRMSGV(MF_REMOVE_TERMINAL_1_FROM_NET_2,       2, "Can not remove terminal {1} from net {2}.")
 	PERRMSGV(MF_UNKNOWN_PARAM_TYPE,                 1, "Can not determine param_type for {1}")
-	PERRMSGV(MF_ERROR_CONNECTING_1_TO_2,            2, "Error connecting {1} to {2}")
+	//PERRMSGV(MF_ERROR_CONNECTING_1_TO_2,            2, "Error connecting {1} to {2}")
 	PERRMSGV(ME_HND_VAL_NOT_SUPPORTED,              1, "HINT_NO_DEACTIVATE value not supported: <{1}>")
 	PERRMSGV(MW_ROM_NOT_FOUND,                      1, "Rom {1} not found")
 
@@ -43,6 +43,7 @@ namespace netlist
 	PERRMSGV(MF_UNEXPECTED_NETLIST_END,             0, "Unexpected NETLIST_END")
 	PERRMSGV(MF_UNEXPECTED_END_OF_FILE,             0, "Unexpected end of file, missing NETLIST_END")
 	PERRMSGV(MF_UNEXPECTED_NETLIST_START,           0, "Unexpected NETLIST_START")
+	PERRMSGV(MF_EXPECTED_NETLIST_START_1,           1, "Expected NETLIST_START but got {1}")
 	PERRMSGV(MF_EXPECTED_IDENTIFIER_GOT_1,          1, "Expected an identifier, but got {1}")
 	PERRMSGV(MF_EXPECTED_COMMA_OR_RP_1,             1, "Expected comma or right parenthesis but found <{1}>")
 	PERRMSGV(MF_DIPPINS_EQUAL_NUMBER_1,             1, "DIPPINS requires equal number of pins to DIPPINS, first pin is {}")
@@ -111,7 +112,7 @@ namespace netlist
 		"but has been forced to act as a logic output. Parameter "
 		" FORCE_TRISTATE_LOGIC for device {2} needs to be disabled!.")
 
-	PERRMSGV(MI_REMOVE_DEVICE_1_CONNECTED_ONLY_TO_RAILS_2_3, 3, "Found device {1} connected only to railterminals {2}/{3}. Will be removed")
+	PERRMSGV(MI_REMOVE_DEVICE_1_CONNECTED_ONLY_TO_RAILS_2_3, 3, "Found device {1} connected only to railterminals {2}/{3}. Please consider commenting those out.")
 
 	PERRMSGV(MW_DATA_1_NOT_FOUND,                   1, "unable to find data {1} in sources collection")
 
